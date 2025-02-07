@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class NeuronLayer {
-    private final Neuron[] neurons;
+    private Neuron[] neurons;
 
     public NeuronLayer(int numNeurons, int inputSize) {
         neurons = new Neuron[numNeurons];
@@ -33,13 +33,14 @@ public class NeuronLayer {
     }
 
     public void setNeurons(Neuron[] neurons) {
-
+        this.neurons = neurons;
     }
 
-    @Override
-    public NeuronLayer clone() {
-        NeuronLayer neuronLayer = new NeuronLayer(neurons.length, neurons[0].getWeights().length);
+    public NeuronLayer getCopy() {
+        /* NeuronLayer neuronLayer = new NeuronLayer(neurons.length, neurons[0].getWeights().length);
         neuronLayer.setNeurons(neurons);
         return neuronLayer;
+        */
+        return this;
     }
 }

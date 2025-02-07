@@ -34,8 +34,8 @@ public class Network {
 
             // Werte anpassen
 
-            NeuronLayer oldHiddenLayer = hiddenLayer.clone();
-            NeuronLayer oldOutputLayer = outputLayer.clone();
+            NeuronLayer oldHiddenLayer = hiddenLayer.getCopy();
+            NeuronLayer oldOutputLayer = outputLayer.getCopy();
             hiddenLayer.changeSingleValue(cost);
             outputLayer.changeSingleValue(cost);
 
@@ -48,7 +48,7 @@ public class Network {
             // Writer erstellen
             String filename = "kosten.txt";
             try (FileWriter writer = new FileWriter(filename, true)) {
-                writer.write(Double.toString(cost) + "\n");
+                writer.write(cost + "\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
