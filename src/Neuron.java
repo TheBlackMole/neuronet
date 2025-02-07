@@ -11,14 +11,14 @@ public class Neuron {
             weights[i] = rand.nextDouble() * 2 - 1; // Werte zwischen -1 und 1
         }
         bias = rand.nextDouble() * 2 - 1;
-        System.out.println("Neues Neuron erstellt mit Bias: " + bias + ", Weights:");
+        /*System.out.println("Neues Neuron erstellt mit Bias: " + bias + ", Weights:");
         for(double weight : weights) {
             System.out.println(weight);
-        }
+        } */
     }
 
     public double activate(double[] inputs) {
-        System.out.println("Inputs: " + inputs.length + " weights: "+ weights.length);
+        //System.out.println("Inputs: " + inputs.length + " weights: "+ weights.length);
         if (inputs.length != weights.length) {
             throw new IllegalArgumentException("Eingangsgröße stimmt nicht mit Gewichtsanzahl überein.");
         }
@@ -33,5 +33,21 @@ public class Neuron {
 
     private double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
+    }
+
+    public double getBias() {
+        return bias;
+    }
+
+    public void setBias(double bias) {
+        this.bias = bias;
+    }
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;
     }
 }

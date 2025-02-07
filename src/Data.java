@@ -28,7 +28,7 @@ public class Data {
                 writer.write(x + "," + y + "," + label + "\n");
             }
 
-            System.out.println("1000 Trainingsdaten wurden in " + filename + " gespeichert.");
+            System.out.println(dataSize + " Trainingsdaten wurden in " + filename + " gespeichert.");
         } catch (IOException e) {
             e.printStackTrace();
         }
