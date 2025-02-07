@@ -1,8 +1,14 @@
 public class Main {
+
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-        // Test1
-        // Test2
-        // Test 3
+        Network network = new Network(1, 1);
+        double[] input = {1,2};
+        double[] results = network.run(input);
+        System.out.println("Ausgabe:");
+        for(double result : results) {
+            System.out.println(result);
+        }
     }
+
 }
