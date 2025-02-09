@@ -16,6 +16,19 @@ public class NeuronLayer {
                 .mapToDouble(neuron -> neuron.activate(inputs))
                 .toArray();
     }
+    public void changeValue(double result, double trainingResult) {
+        if (result==trainingResult) {
+            return;
+        }
+        if (result > trainingResult) {
+            double change = 0.1;
+            neurons[neurons.length-1].setBias(neurons[neurons.length-1].getBias() - change);
+        }
+        if (result < trainingResult) {
+            double change = 0.1;
+            neurons[neurons.length-1].setBias(neurons[neurons.length-1].getBias() + change);
+        }
+    }
 
     public void changeSingleValue(double cost) {
         Random r = new Random();

@@ -29,15 +29,41 @@ public class Network {
             double[] currentData = trainingData.get(r.nextInt(trainingData.size()));
             double[] input = {currentData[0], currentData[1]};
             double[] results = run(input);
+            double oldResult = results[0];
+            System.out.println("result: " + results[0]); 
             double[] trainingDataResults = {currentData[2]};
+            System.out.println("trainingResult: " + trainingDataResults[0]);
             double cost = calculateCostFunction(results, trainingDataResults);
 
             // Werte anpassen
 
             NeuronLayer oldHiddenLayer = hiddenLayer.getCopy();
             NeuronLayer oldOutputLayer = outputLayer.getCopy();
-            hiddenLayer.changeSingleValue(cost);
-            outputLayer.changeSingleValue(cost);
+            boolean goOn = true;
+            int barrier = 0;
+            while (goOn == true) {
+                barrier = barrier + 1;
+                System.out.println("barrier: " + barrier);
+                //double oldResult = results[0];
+                outputLayer.changeValue(results[0], trainingDataResults[0]);
+                results = run(input);
+                double newResult = results[0];
+                double oldDelta = trainingDataResults[0] - oldResult;
+                double newDelta = trainingDataResults[0] - newResult;
+                System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
+                System.out.println("oldDelta: " + oldDelta + " newDelta: " + newDelta);
+                System.out.println("trainingResult: " + trainingDataResults[0]);
+                if (oldDelta > newDelta && newDelta != 0) {
+                    hiddenLayer.changeValue(newResult, trainingDataResults[0]);
+                }
+                if(barrier>=10 || newDelta == 0){
+                    goOn = false;
+                    break;
+                }
+            }
+            
+            //hiddenLayer.changeSingleValue(cost);
+            //outputLayer.changeSingleValue(cost);
 
             // Neu berechnen
             results = run(input);
