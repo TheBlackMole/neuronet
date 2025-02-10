@@ -99,7 +99,7 @@ public class Network {
         }
     }
 
-    public double roundDouble(double value, int places) {
+    private double roundDouble(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(Double.toString(value));

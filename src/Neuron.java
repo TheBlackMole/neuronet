@@ -1,3 +1,5 @@
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Random;
 
 public class Neuron {
@@ -27,9 +29,27 @@ public class Neuron {
         for (int i = 0; i < inputs.length; i++) {
             sum += inputs[i] * weights[i];
         }
-
-        return sigmoid(sum);
+        sum = roundDouble(sum, 5);
+        double smallSum = sum / 4;
+        System.out.println("sum: " + sum);
+        System.out.println("sigmoid small: " + roundDouble(sigmoid(smallSum),4));
+        System.out.println("tanh small: " + roundDouble(tanh(smallSum),4));
+        System.out.println("sigmoid: " + roundDouble(sigmoid(sum),4));
+        System.out.println("tanh: " + roundDouble(tanh(sum),4));
+        return tanh(sum);
+        //return sigmoid(sum);
     }
+    private double roundDouble(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    private double tanh(double x) {
+        return (2 / (1 + Math.exp(-2 * x))) - 1;
+    } 
 
     private double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
