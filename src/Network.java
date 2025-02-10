@@ -1,5 +1,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +28,7 @@ public class Network {
 
         for(int i = 1; i < trainingSize; i++) {
             // Test durchführen und Kosten berechnen
+            System.out.println("HL. n. : " + hiddenLayer.getNeuron(0));
             double[] currentData = trainingData.get(r.nextInt(trainingData.size()));
             double[] input = {currentData[0], currentData[1]};
             double[] results = run(input);
@@ -42,20 +45,23 @@ public class Network {
             boolean goOn = true;
             int barrier = 0;
             while (goOn == true) {
-                barrier = barrier + 1;
+                barrier++;
                 System.out.println("barrier: " + barrier);
-                //double oldResult = results[0];
                 outputLayer.changeValue(results[0], trainingDataResults[0]);
                 results = run(input);
                 double newResult = results[0];
                 double oldDelta = trainingDataResults[0] - oldResult;
                 double newDelta = trainingDataResults[0] - newResult;
-                System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
-                System.out.println("oldDelta: " + oldDelta + " newDelta: " + newDelta);
-                System.out.println("trainingResult: " + trainingDataResults[0]);
+                //System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
+                //System.out.println("oldDelta: " + oldDelta + " newDelta: " + newDelta);
+                //System.out.println("trainingResult: " + trainingDataResults[0])
+                double hiddenBias = hiddenLayer.getNeuron(0).getBias();
+                System.out.println("hiddenLayer o. Neuron Bias: " + roundDouble(hiddenBias,3));
+                System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
                 if (oldDelta > newDelta && newDelta != 0) {
                     hiddenLayer.changeValue(newResult, trainingDataResults[0]);
                 }
+                
                 if(barrier>=10 || newDelta == 0){
                     goOn = false;
                     break;
@@ -91,6 +97,14 @@ public class Network {
 
 
         }
+    }
+
+    public double roundDouble(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     private double calculateCostFunction(double[] results, double[] trainingDataResults) {

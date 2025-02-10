@@ -29,10 +29,11 @@ public class NeuronLayer {
             neurons[neurons.length-1].setBias(neurons[neurons.length-1].getBias() + change);
         }
     }
+    
 
     public void changeSingleValue(double cost) {
         Random r = new Random();
-        double change = r.nextDouble() * 0.2 - 0.1;
+        double change = r.nextDouble() * 0.2 - 0.1; // zufallszahl zw. -0.1 und 0.1
         int index = r.nextInt(neurons.length);
         boolean type = r.nextBoolean();
         if(type) { // Type = Bias
@@ -47,6 +48,13 @@ public class NeuronLayer {
 
     public void setNeurons(Neuron[] neurons) {
         this.neurons = neurons;
+    }
+
+    public Neuron[] getNeurons() {
+        return neurons;
+    }
+    public Neuron getNeuron(int i) {
+        return neurons[i];
     }
 
     public NeuronLayer getCopy() {
