@@ -20,8 +20,8 @@ public class Data {
             writer.write("x,y,label1,label2\n"); // Header
 
             for (int i = 0; i < dataSize; i++) {
-                int x = rand.nextInt(50) + 1;  // Zufallszahl 1-500
-                int y = rand.nextInt(50) + 1; // Zufallszahl 1-500
+                int x = rand.nextInt(50) + 1;  // Zufallszahl 1-50
+                int y = rand.nextInt(50) + 1; // Zufallszahl 1-50
                 double label1 = gaussCurve(x, y);
 
                 writer.write(x + "," + y + "," + label1 + "\n");
@@ -34,7 +34,7 @@ public class Data {
     }
 
     public static double gaussCurve(double x, double y) {
-        return Math.exp(-0.001 * Math.pow((x-y), 2));
+        return Math.exp(-Math.pow((x-y), 2));
     }
 
     public static List<double[]> loadTrainingData(String filename) {

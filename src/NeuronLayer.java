@@ -11,10 +11,20 @@ public class NeuronLayer {
         }
     }
 
-    public double[] forward(double[] inputs) {
+    public double[] forward(double[] input) {
+        double[] output = new double[neurons.length];
+        int i = 0;
+        for(Neuron n : neurons) {
+            output[i] = n.activate(input);
+            i++;
+        }
+        return output;
+        // Alte Methode, kp wie das funktioniert
+        /*
         return Arrays.stream(neurons)
                 .mapToDouble(neuron -> neuron.activate(inputs))
                 .toArray();
+        */
     }
     public void changeValue(double result, double trainingResult) {
         if (result==trainingResult) {
