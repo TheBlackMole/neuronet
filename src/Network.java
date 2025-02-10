@@ -26,43 +26,54 @@ public class Network {
         Random r = new Random();
 
 
-        for(int i = 1; i < trainingSize; i++) {
-            // Test durchführen und Kosten berechnen
+        for(int i = 0; i < trainingSize; i++) {
+            // Testdaten mit altem Netz durchführen und Kosten berechnen
             System.out.println("HL. n. : " + hiddenLayer.getNeuron(0));
             double[] currentData = trainingData.get(r.nextInt(trainingData.size()));
             double[] input = {currentData[0], currentData[1]};
             double[] results = run(input);
-            double oldResult = results[0];
+            //double oldResult = results[0];
             System.out.println("result: " + results[0]); 
             double[] trainingDataResults = {currentData[2]};
             System.out.println("trainingResult: " + trainingDataResults[0]);
-            double cost = calculateCostFunction(results, trainingDataResults);
+            double oldCost = calculateCostFunction(results, trainingDataResults);
 
-            // Werte anpassen
-
+            // Altes Netz sichern
             NeuronLayer oldHiddenLayer = hiddenLayer.getCopy();
             NeuronLayer oldOutputLayer = outputLayer.getCopy();
+
+            // Schleife zur Verbesserung
             boolean goOn = true;
-            int barrier = 0;
+            int barrier = 0; // Zählvariable, bricht nach 10 mal ab
+            double newCost = 0; // Kosten nach Änderung des Outputlayers
+            double veryNewCost = 0; // Kosten nach Änderung des Hiddenlayers
             while (goOn == true) {
                 barrier++;
                 System.out.println("barrier: " + barrier);
-                outputLayer.changeValue(results[0], trainingDataResults[0]);
+                outputLayer.changeValue(oldCost); // Outputlayer wird geändert und neue Kosten berechnet
                 results = run(input);
-                double newResult = results[0];
-                double oldDelta = trainingDataResults[0] - oldResult;
-                double newDelta = trainingDataResults[0] - newResult;
+                newCost = calculateCostFunction(results, trainingDataResults);
+                //double newResult = results[0];
+                //double oldDelta = trainingDataResults[0] - oldResult;
+                //double newDelta = trainingDataResults[0] - newResult;
                 //System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
                 //System.out.println("oldDelta: " + oldDelta + " newDelta: " + newDelta);
                 //System.out.println("trainingResult: " + trainingDataResults[0])
                 double hiddenBias = hiddenLayer.getNeuron(0).getBias();
                 System.out.println("hiddenLayer o. Neuron Bias: " + roundDouble(hiddenBias,3));
                 System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
-                if (oldDelta > newDelta && newDelta != 0) {
-                    hiddenLayer.changeValue(newResult, trainingDataResults[0]);
+                if (oldCost > newCost && newCost != 0) { // Wenn Verbesserung
+                    hiddenLayer.changeValue(newCost); // Hiddenlayer wird geändert und neue Kosten berechnet
+                    results = run(input);
+                    veryNewCost = calculateCostFunction(results, trainingDataResults);
+                    if(newCost < veryNewCost) {
+                        hiddenLayer = oldHiddenLayer; // Schlechter geworden -> Rückgängig machen
+                    }
+                } else {
+                    outputLayer = oldOutputLayer; // Schlechter geworden -> Rückgängig machen
                 }
                 
-                if(barrier>=10 || newDelta == 0){
+                if(barrier>=10 || veryNewCost == 0){
                     goOn = false;
                     break;
                 }
@@ -71,6 +82,7 @@ public class Network {
             //hiddenLayer.changeSingleValue(cost);
             //outputLayer.changeSingleValue(cost);
 
+            /*
             // Neu berechnen
             results = run(input);
             double newCost = calculateCostFunction(results, trainingDataResults);
@@ -95,7 +107,7 @@ public class Network {
             }
             System.out.println("Wird übernommen");
 
-
+            */
         }
     }
 

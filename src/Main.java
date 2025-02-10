@@ -10,7 +10,7 @@ public class Main {
         data.createTrainingData(5000);
         List<double[]> trainingData = Data.loadTrainingData("trainingsdaten.txt");
         Network network = new Network(2, 1, 1);
-        network.training(50, trainingData);
+        network.training(500, trainingData);
         double[] input = {10, 10};
         double[] results = network.run(input);
         System.out.println("Ausgabe des Input:");

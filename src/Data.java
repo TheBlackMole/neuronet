@@ -34,7 +34,7 @@ public class Data {
     }
 
     public static double gaussCurve(double x, double y) {
-        return Math.exp(-Math.pow((x-y), 2));
+        return 2 * Math.exp(-0.01 * Math.pow((x-y), 2)) - 1;
     }
 
     public static List<double[]> loadTrainingData(String filename) {

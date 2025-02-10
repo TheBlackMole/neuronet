@@ -10,9 +10,9 @@ public class Neuron {
         Random rand = new Random();
         weights = new double[inputSize];
         for (int i = 0; i < inputSize; i++) {
-            weights[i] = rand.nextDouble() * 2 - 1; // Werte zwischen -1 und 1
+            weights[i] = rand.nextDouble() * 0.02 - 0.01; // Werte zwischen 0.01 und -0.01
         }
-        bias = rand.nextDouble() * 2 - 1;
+        bias = rand.nextDouble() * 0.02 - 0.01;
         /*System.out.println("Neues Neuron erstellt mit Bias: " + bias + ", Weights:");
         for(double weight : weights) {
             System.out.println(weight);
@@ -31,13 +31,15 @@ public class Neuron {
         }
         sum = roundDouble(sum, 5);
         double smallSum = sum / 4;
+        /*
         System.out.println("sum: " + sum);
         System.out.println("sigmoid small: " + roundDouble(sigmoid(smallSum),4));
         System.out.println("tanh small: " + roundDouble(tanh(smallSum),4));
         System.out.println("sigmoid: " + roundDouble(sigmoid(sum),4));
         System.out.println("tanh: " + roundDouble(tanh(sum),4));
+        */
         return tanh(sum);
-        //return sigmoid(sum);
+        //return sigmoid(smallSum);
     }
     private double roundDouble(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
