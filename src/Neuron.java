@@ -11,8 +11,10 @@ public class Neuron {
         weights = new double[inputSize];
         for (int i = 0; i < inputSize; i++) {
             weights[i] = rand.nextDouble() * 0.02 - 0.01; // Werte zwischen 0.01 und -0.01
+            weights[i] = roundDouble(weights[i], 4);
         }
         bias = rand.nextDouble() * 0.02 - 0.01;
+        bias = roundDouble(bias, 4);
         /*System.out.println("Neues Neuron erstellt mit Bias: " + bias + ", Weights:");
         for(double weight : weights) {
             System.out.println(weight);
@@ -30,7 +32,7 @@ public class Neuron {
             sum += inputs[i] * weights[i];
         }
         sum = roundDouble(sum, 5);
-        double smallSum = sum / 4;
+        //double smallSum = sum / 4;
         /*
         System.out.println("sum: " + sum);
         System.out.println("sigmoid small: " + roundDouble(sigmoid(smallSum),4));
@@ -52,13 +54,13 @@ public class Neuron {
     private double tanh(double x) {
         return (2 / (1 + Math.exp(-2 * x))) - 1;
     } 
-
+/* 
     private double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
     }
-
+*/
     public double getBias() {
-        return bias;
+        return roundDouble(bias, 4);
     }
 
     public void setBias(double bias) {
