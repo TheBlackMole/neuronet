@@ -26,8 +26,8 @@ public class Network {
     public double[] run(double[] input) {
         System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input);
-        return outputLayer.forward(resultsHiddenLayer);
+        double[] resultsHiddenLayer = hiddenLayer.forward(input, "leakyReLu");
+        return outputLayer.forward(resultsHiddenLayer, "sigmoid");
     }
 
     public void training(int trainingSize, List<double[]> trainingData) {
@@ -71,9 +71,9 @@ public class Network {
                 //System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
                 //System.out.println("oldDelta: " + oldDelta + " newDelta: " + newDelta);
                 //System.out.println("trainingResult: " + trainingDataResults[0])
-                double hiddenBias = hiddenLayer.getNeuron(0).getBias();
-                System.out.println("hiddenLayer o. Neuron Bias: " + roundDouble(hiddenBias,3));
-                System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
+                //double hiddenBias = hiddenLayer.getNeuron(0).getBias();
+                //System.out.println("hiddenLayer o. Neuron Bias: " + roundDouble(hiddenBias,3));
+                //System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
                 if (oldCost > newCost && newCost != 0) { // Wenn Verbesserung
                     hiddenLayer.changeValue(newCost); // Hiddenlayer wird geändert und neue Kosten berechnet
                     results = run(input);

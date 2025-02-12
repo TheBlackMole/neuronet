@@ -10,10 +10,10 @@ public class Neuron {
         Random rand = new Random();
         weights = new double[inputSize];
         for (int i = 0; i < inputSize; i++) {
-            weights[i] = rand.nextDouble() * 0.02 - 0.01; // Werte zwischen 0.01 und -0.01
+            weights[i] = rand.nextDouble() * 2 - 1; // Werte zwischen 0.01 und -0.01
             weights[i] = roundDouble(weights[i], 4);
         }
-        bias = rand.nextDouble() * 0.02 - 0.01;
+        bias = rand.nextDouble() * 2 - 1;
         bias = roundDouble(bias, 4);
         /*System.out.println("Neues Neuron erstellt mit Bias: " + bias + ", Weights:");
         for(double weight : weights) {
@@ -21,7 +21,7 @@ public class Neuron {
         } */
     }
 
-    public double activate(String typ, double ratio, double[] inputs) {
+    public double activate(String type, double ratio, double[] inputs) {
         //System.out.println("Inputs: " + inputs.length + " weights: "+ weights.length);
         if (inputs.length != weights.length) {
             throw new IllegalArgumentException("Eingangsgröße stimmt nicht mit Gewichtsanzahl überein.");
@@ -32,13 +32,13 @@ public class Neuron {
         }
         sum = roundDouble(sum, 5);
 
-        if (typ == "tanh") { // -1; 1
+        if (type.equalsIgnoreCase("tanh")) { // -1; 1
             sum = tanh(sum * ratio);
-        } else if (typ == "sigmoid") { // 0; 1
+        } else if (type.equalsIgnoreCase("sigmoid")) { // 0; 1
             sum = sigmoid(sum * ratio);
-        } else if (typ == "linear") {
+        } else if (type.equalsIgnoreCase("linear")) {
             sum = linear(sum *ratio);
-        } else if (typ == "leakyReLu") { //  { a*x ; x } --> oft x=0.01 --> für negative x Werte
+        } else if (type.equalsIgnoreCase("leakyReLu")) { //  { a*x ; x } --> oft x=0.01 --> für negative x Werte
             sum = leakyReLu(sum * ratio);
         } else {
             System.out.println("fehlerhafter Aufruf der Aktivierungsfunktion");

@@ -34,7 +34,8 @@ public class Data {
     }
 
     public static double gaussCurve(double x, double y) {
-        return 2 * Math.exp(-0.01 * Math.pow((x-y), 2)) - 1;
+        // return 2 * Math.exp(-0.01 * Math.pow((x-y), 2)) - 1; // Für tanh Werte
+        return Math.exp(-0.01 * Math.pow((x-y), 2)); // Für Sigmoid Werte
     }
 
     public static List<double[]> loadTrainingData(String filename) {

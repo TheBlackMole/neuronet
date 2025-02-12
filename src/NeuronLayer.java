@@ -11,11 +11,11 @@ public class NeuronLayer {
         }
     }
 
-    public double[] forward(double[] input) {
+    public double[] forward(double[] input, String type) {
         double[] output = new double[neurons.length];
         int i = 0;
         for(Neuron n : neurons) {
-            output[i] = n.activate("tanh", 0.25 , input);
+            output[i] = n.activate(type, 0.25 , input);
             i++;
         }
         return output;
@@ -33,9 +33,9 @@ public class NeuronLayer {
         Random r = new Random();
         double change;
         if (r.nextBoolean()) {
-            change = 0.001;
+            change = 0.01;
         } else {
-            change = -0.001;
+            change = -0.01;
         }
         int index = r.nextInt(neurons.length);
         // Bias verändern
