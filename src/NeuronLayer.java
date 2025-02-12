@@ -15,7 +15,7 @@ public class NeuronLayer {
         double[] output = new double[neurons.length];
         int i = 0;
         for(Neuron n : neurons) {
-            output[i] = n.activate(input);
+            output[i] = n.activate("tanh", 0.25 , input);
             i++;
         }
         return output;
