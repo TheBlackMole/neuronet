@@ -20,11 +20,11 @@ public class Data {
             writer.write("x,y,label1,label2\n"); // Header
 
             for (int i = 0; i < dataSize; i++) {
-                int x = rand.nextInt(50) + 1;  // Zufallszahl 1-50
-                int y = rand.nextInt(50) + 1; // Zufallszahl 1-50
-                double label1 = gaussCurve(x, y);
+                int x = rand.nextInt(100) + 1;  // Zufallszahl 1-50
+                int y = rand.nextInt(100) + 1; // Zufallszahl 1-50
+                double label1 = gaussCurve(x,y);
 
-                writer.write(x + "," + y + "," + label1 + "\n");
+                writer.write(Math.min(x,y) + "," + Math.max(x,y) + "," + label1 + "\n");
             }
 
             System.out.println(dataSize + " Trainingsdaten wurden in " + filename + " gespeichert.");

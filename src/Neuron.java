@@ -10,7 +10,7 @@ public class Neuron {
         Random rand = new Random();
         weights = new double[inputSize];
         for (int i = 0; i < inputSize; i++) {
-            weights[i] = rand.nextDouble() * 2 - 1; // Werte zwischen 0.01 und -0.01
+            weights[i] = rand.nextDouble() * 2 - 1; // Werte zwischen 1 und -1
             weights[i] = roundDouble(weights[i], 4);
         }
         bias = rand.nextDouble() * 2 - 1;

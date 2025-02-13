@@ -20,13 +20,13 @@ public class Network {
     public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize) {
         hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
         outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
-        loadWeightsAndBiases("weights_biases.txt");
+        //loadWeightsAndBiases("weights_biases.txt");
     }
 
     public double[] run(double[] input) {
         System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, "leakyReLu");
+        double[] resultsHiddenLayer = hiddenLayer.forward(input, "sigmoid");
         return outputLayer.forward(resultsHiddenLayer, "sigmoid");
     }
 
@@ -41,7 +41,8 @@ public class Network {
             System.out.println("Bias hidden start: " + roundDouble(BiasHiddenStart, 3));
             // Testdaten mit altem Netz durchführen und Kosten berechnen
             //System.out.println("HL. n. : " + hiddenLayer.getNeuron(0));
-            double[] currentData = trainingData.get(r.nextInt(trainingData.size()));
+            //double[] currentData = trainingData.get(r.nextInt(trainingData.size())); // Trainieren per Zufall
+            double[] currentData = trainingData.get(i); // Trainieren nach Reihenfolge
             double[] input = {currentData[0], currentData[1]};
             double[] results = run(input);
             //double oldResult = results[0];
