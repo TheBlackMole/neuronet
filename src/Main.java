@@ -11,7 +11,7 @@ public class Main {
         data.createTrainingData(500);
         List<double[]> trainingData = Data.loadTrainingData("trainingsdaten.txt");
         Network network = new Network(2, 4, 1);
-        //network.training(500, trainingData);
+        network.training(500, trainingData);
         double[] input = {10, 10};
         double[] results = network.run(input);
         System.out.println("Input " + Arrays.toString(input));

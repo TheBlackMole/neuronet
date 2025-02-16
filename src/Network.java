@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +20,7 @@ public class Network {
     int inputLayerSize;
     int hiddenLayerSize;
     int outputLayerSize;
+    List<Double> costs;
 
     public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize) {
         this.inputLayerSize = inputLayerSize;
@@ -27,6 +29,7 @@ public class Network {
         hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
         outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
         loadWeightsAndBiases("weights_biases.txt");
+        costs = new ArrayList<Double>();
     }
 
     public double[] run(double[] input) {
@@ -42,7 +45,7 @@ public class Network {
         //double BiasHiddenStart = hiddenLayer.getNeuron(0).getBias();
 
         double oldCost;
-        double newCost ;
+        double newCost;
 
         for(int i = 0; i < trainingSize; i++) {
             //System.out.println("Bias out start: " + roundDouble(BiasOutStart, 3));
@@ -74,11 +77,17 @@ public class Network {
                 //System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
             if (oldCost < newCost) { // Wenn Verschlechterung
                 loadWeightsAndBiases("weights_biases.txt");
+                costs.add(oldCost);
             } else {
                 saveWeightsAndBiases("weights_biases.txt");
+                costs.add(newCost);
             }
 
+
+
         }
+
+        printCost();
             
             
         //hiddenLayer.changeSingleValue(cost);
@@ -195,5 +204,17 @@ public class Network {
             cost += Math.pow((trainingDataResults[i] - results[i]), 2);
         }
         return cost;
+    }
+
+    // Kosten in Datei speichern
+    private void printCost() {
+        try (FileWriter file = new FileWriter("kosten.txt")) {
+            for(Double d : costs) {
+                file.write(Double.toString(roundDouble(d, 4)) + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
