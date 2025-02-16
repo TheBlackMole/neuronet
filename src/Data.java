@@ -17,21 +17,25 @@ public class Data {
         Random rand = new Random();
 
         try (FileWriter writer = new FileWriter(filename)) {
-            writer.write("x,y,label\n"); // Header
+            writer.write("x,y,label1,label2\n"); // Header
 
             for (int i = 0; i < dataSize; i++) {
-                int x = rand.nextInt(5000) + 1;  // Zufallszahl 1-500
-                boolean isDouble = rand.nextBoolean();
-                int y = isDouble ? x * 2 : rand.nextInt(10000) + 1; // Doppelt oder Zufall
-                double label = isDouble ? 1.0 : 0.0;
+                int x = rand.nextInt(100) + 1;  // Zufallszahl 1-50
+                int y = rand.nextInt(100) + 1; // Zufallszahl 1-50
+                double label1 = gaussCurve(x,y);
 
-                writer.write(x + "," + y + "," + label + "\n");
+                writer.write(Math.min(x,y) + "," + Math.max(x,y) + "," + label1 + "\n");
             }
 
             System.out.println(dataSize + " Trainingsdaten wurden in " + filename + " gespeichert.");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static double gaussCurve(double x, double y) {
+        // return 2 * Math.exp(-0.01 * Math.pow((x-y), 2)) - 1; // Für tanh Werte
+        return Math.exp(-0.01 * Math.pow((x-y), 2)); // Für Sigmoid Werte
     }
 
     public static List<double[]> loadTrainingData(String filename) {
