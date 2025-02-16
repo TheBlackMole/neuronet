@@ -16,57 +16,54 @@ public class Network {
 
     private NeuronLayer hiddenLayer;
     private NeuronLayer outputLayer;
+    int inputLayerSize;
+    int hiddenLayerSize;
+    int outputLayerSize;
 
     public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize) {
+        this.inputLayerSize = inputLayerSize;
+        this.hiddenLayerSize = hiddenLayerSize;
+        this.outputLayerSize = outputLayerSize;
         hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
         outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
-        //loadWeightsAndBiases("weights_biases.txt");
+        loadWeightsAndBiases("weights_biases.txt");
     }
 
     public double[] run(double[] input) {
-        System.out.println("Inputs: " + input [0] + " " + input[1]);
+        //System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, "sigmoid");
+        double[] resultsHiddenLayer = hiddenLayer.forward(input, "leakyReLu");
         return outputLayer.forward(resultsHiddenLayer, "sigmoid");
     }
 
     public void training(int trainingSize, List<double[]> trainingData) {
         Random r = new Random();
-        double BiasOutStart = outputLayer.getNeuron(0).getBias();
-        double BiasHiddenStart = hiddenLayer.getNeuron(0).getBias();
-        
+        //double BiasOutStart = outputLayer.getNeuron(0).getBias();
+        //double BiasHiddenStart = hiddenLayer.getNeuron(0).getBias();
+
+        double oldCost;
+        double newCost ;
 
         for(int i = 0; i < trainingSize; i++) {
-            System.out.println("Bias out start: " + roundDouble(BiasOutStart, 3));
-            System.out.println("Bias hidden start: " + roundDouble(BiasHiddenStart, 3));
+            //System.out.println("Bias out start: " + roundDouble(BiasOutStart, 3));
+            //System.out.println("Bias hidden start: " + roundDouble(BiasHiddenStart, 3));
             // Testdaten mit altem Netz durchführen und Kosten berechnen
             //System.out.println("HL. n. : " + hiddenLayer.getNeuron(0));
             //double[] currentData = trainingData.get(r.nextInt(trainingData.size())); // Trainieren per Zufall
-            double[] currentData = trainingData.get(i); // Trainieren nach Reihenfolge
-            double[] input = {currentData[0], currentData[1]};
-            double[] results = run(input);
-            //double oldResult = results[0];
-            //System.out.println("result: " + results[0]); 
-            double[] trainingDataResults = {currentData[2]};
-            //System.out.println("trainingResult: " + trainingDataResults[0]);
-            double oldCost = calculateCostFunction(results, trainingDataResults);
+
+            // Alte Kosten berechnen
+            oldCost = calculateCurrentCostSum(trainingData);
 
             // Altes Netz sichern
-            NeuronLayer oldHiddenLayer = hiddenLayer.getCopy();
-            NeuronLayer oldOutputLayer = outputLayer.getCopy();
+            saveWeightsAndBiases("weights_biases.txt");
 
-            // Schleife zur Verbesserung
-            boolean goOn = true;
-            int barrier = 0; // Zählvariable, bricht nach 10 mal ab
-            double newCost = 0; // Kosten nach Änderung des Outputlayers
-            double veryNewCost = 0; // Kosten nach Änderung des Hiddenlayers
-            while (goOn == true) {
-                barrier++;
-                //System.out.println("barrier: " + barrier);
-                outputLayer.changeValue(oldCost); // Outputlayer wird geändert und neue Kosten berechnet
-                results = run(input);
-                newCost = calculateCostFunction(results, trainingDataResults);
-                //double newResult = results[0];
+            // Layer anpassen
+            hiddenLayer.changeValue(oldCost); // Hiddenlayer wird geändert
+            outputLayer.changeValue(oldCost); // Outputlayer wird geändert
+
+            // Neue Kosten berechnen
+            newCost = calculateCurrentCostSum(trainingData);
+            //double newResult = results[0];
                 //double oldDelta = trainingDataResults[0] - oldResult;
                 //double newDelta = trainingDataResults[0] - newResult;
                 //System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
@@ -75,28 +72,19 @@ public class Network {
                 //double hiddenBias = hiddenLayer.getNeuron(0).getBias();
                 //System.out.println("hiddenLayer o. Neuron Bias: " + roundDouble(hiddenBias,3));
                 //System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
-                if (oldCost > newCost && newCost != 0) { // Wenn Verbesserung
-                    hiddenLayer.changeValue(newCost); // Hiddenlayer wird geändert und neue Kosten berechnet
-                    results = run(input);
-                    veryNewCost = calculateCostFunction(results, trainingDataResults);
-                    if(newCost < veryNewCost) {
-                        hiddenLayer = oldHiddenLayer; // Schlechter geworden -> Rückgängig machen
-                    }
-                } else {
-                    outputLayer = oldOutputLayer; // Schlechter geworden -> Rückgängig machen
-                }
-                
-                if(barrier>=10 || veryNewCost == 0){
-                    goOn = false;
-                    break;
-                }
+            if (oldCost < newCost) { // Wenn Verschlechterung
+                loadWeightsAndBiases("weights_biases.txt");
+            } else {
+                saveWeightsAndBiases("weights_biases.txt");
             }
+
+        }
             
             
-            //hiddenLayer.changeSingleValue(cost);
+        //hiddenLayer.changeSingleValue(cost);
             //outputLayer.changeSingleValue(cost);
 
-            /*
+        /*
             // Neu berechnen
             results = run(input);
             double newCost = calculateCostFunction(results, trainingDataResults);
@@ -122,10 +110,25 @@ public class Network {
             System.out.println("Wird übernommen");
 
             */
+
+        //System.out.println("Neoron Out.0 Bias ende: " + roundDouble(outputLayer.getNeuron(0).getBias(), 3));
+        //System.out.println("Neuron hidden.0 Bias ende: " + roundDouble(hiddenLayer.getNeuron(0).getBias(), 3));
+    }
+
+    // Berechnet die summierten Kosten aller Trainingsdaten
+    private double calculateCurrentCostSum(List<double[]> trainingData) {
+        double cost = 0;
+        double[] input = new double[inputLayerSize];
+        double[] trainingResult = new double[outputLayerSize];
+        double[] networkResult;
+        for(int n = 0; n < trainingData.size(); n++) {
+            input[0] = trainingData.get(n)[0];
+            input[1] = trainingData.get(n)[1];
+            trainingResult[0] = trainingData.get(n)[2];
+            networkResult = run(input);
+            cost += calculateCostFunction(networkResult, trainingResult);
         }
-        saveWeightsAndBiases("weights_biases.txt");
-        System.out.println("Neoron Out.0 Bias ende: " + roundDouble(outputLayer.getNeuron(0).getBias(), 3));
-        System.out.println("Neuron hidden.0 Bias ende: " + roundDouble(hiddenLayer.getNeuron(0).getBias(), 3));
+        return cost;
     }
 
     public void saveWeightsAndBiases(String filename) {

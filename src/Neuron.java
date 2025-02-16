@@ -58,7 +58,7 @@ public class Neuron {
          */
         return sum;
     }
-    private double roundDouble(double value, int places) {
+    public static double roundDouble(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(Double.toString(value));

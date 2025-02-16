@@ -22,7 +22,7 @@ public class Data {
             for (int i = 0; i < dataSize; i++) {
                 int x = rand.nextInt(100) + 1;  // Zufallszahl 1-50
                 int y = rand.nextInt(100) + 1; // Zufallszahl 1-50
-                double label1 = gaussCurve(x,y);
+                double label1 = Neuron.roundDouble(gaussCurve(x,y), 4);
 
                 writer.write(Math.min(x,y) + "," + Math.max(x,y) + "," + label1 + "\n");
             }
