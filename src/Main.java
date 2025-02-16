@@ -15,6 +15,7 @@ public class Main {
         double[] input = {10, 10};
         double[] results = network.run(input);
         System.out.println("Input " + Arrays.toString(input));
+        //new GUI(hiddenLayer, outputLayer);
         for(double result : results) {
             System.out.println(Neuron.roundDouble(result,3));
         }

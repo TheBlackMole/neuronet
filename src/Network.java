@@ -30,6 +30,8 @@ public class Network {
         outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
         loadWeightsAndBiases("weights_biases.txt");
         costs = new ArrayList<Double>();
+
+        new GUI(hiddenLayer, outputLayer);
     }
 
     public double[] run(double[] input) {
