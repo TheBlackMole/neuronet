@@ -31,7 +31,7 @@ public class Network {
         loadWeightsAndBiases("weights_biases.txt");
         costs = new ArrayList<Double>();
 
-        new GUI(hiddenLayer, outputLayer);
+        new GUI(this);
     }
 
     public double[] run(double[] input) {
@@ -43,19 +43,11 @@ public class Network {
 
     public void training(int trainingSize, List<double[]> trainingData) {
         Random r = new Random();
-        //double BiasOutStart = outputLayer.getNeuron(0).getBias();
-        //double BiasHiddenStart = hiddenLayer.getNeuron(0).getBias();
 
         double oldCost;
         double newCost;
 
         for(int i = 0; i < trainingSize; i++) {
-            //System.out.println("Bias out start: " + roundDouble(BiasOutStart, 3));
-            //System.out.println("Bias hidden start: " + roundDouble(BiasHiddenStart, 3));
-            // Testdaten mit altem Netz durchführen und Kosten berechnen
-            //System.out.println("HL. n. : " + hiddenLayer.getNeuron(0));
-            //double[] currentData = trainingData.get(r.nextInt(trainingData.size())); // Trainieren per Zufall
-
             // Alte Kosten berechnen
             oldCost = calculateCurrentCostSum(trainingData);
 
@@ -68,62 +60,19 @@ public class Network {
 
             // Neue Kosten berechnen
             newCost = calculateCurrentCostSum(trainingData);
-            //double newResult = results[0];
-                //double oldDelta = trainingDataResults[0] - oldResult;
-                //double newDelta = trainingDataResults[0] - newResult;
-                //System.out.println("oldresult: " + oldResult + " newresult: " + newResult);
-                //System.out.println("oldDelta: " + oldDelta + " newDelta: " + newDelta);
-                //System.out.println("trainingResult: " + trainingDataResults[0])
-                //double hiddenBias = hiddenLayer.getNeuron(0).getBias();
-                //System.out.println("hiddenLayer o. Neuron Bias: " + roundDouble(hiddenBias,3));
-                //System.out.println("outputLayer o. Neuron Bias: " + roundDouble(outputLayer.getNeuron(0).getBias() , 3) );;
+
             if (oldCost < newCost) { // Wenn Verschlechterung
                 loadWeightsAndBiases("weights_biases.txt");
                 costs.add(oldCost);
-            } else {
+            } else { // Wenn Verbesserung
                 saveWeightsAndBiases("weights_biases.txt");
                 costs.add(newCost);
             }
 
-
-
         }
 
         printCost();
-            
-            
-        //hiddenLayer.changeSingleValue(cost);
-            //outputLayer.changeSingleValue(cost);
 
-        /*
-            // Neu berechnen
-            results = run(input);
-            double newCost = calculateCostFunction(results, trainingDataResults);
-            System.out.println("Alte Kosten: " + cost + " Neue Kosten: " + newCost);
-
-            // Kostenwerte notieren zum Plotten
-            // Writer erstellen
-            String filename = "kosten.txt";
-            try (FileWriter writer = new FileWriter(filename, true)) {
-                writer.write(cost + "\n");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-
-            if(newCost > cost) { // Bei Verschlechterung rückgängig
-                hiddenLayer = oldHiddenLayer;
-                outputLayer = oldOutputLayer;
-                System.out.println("Wird nicht übernommen");
-                continue;
-            }
-            System.out.println("Wird übernommen");
-
-            */
-
-        //System.out.println("Neoron Out.0 Bias ende: " + roundDouble(outputLayer.getNeuron(0).getBias(), 3));
-        //System.out.println("Neuron hidden.0 Bias ende: " + roundDouble(hiddenLayer.getNeuron(0).getBias(), 3));
     }
 
     // Berechnet die summierten Kosten aller Trainingsdaten
@@ -161,36 +110,36 @@ public class Network {
     }
 
     public void loadWeightsAndBiases(String filename) {
-    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-        String line;
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
         
-        // Laden der Gewichte und Biases der versteckten Schicht
-        for (Neuron neuron : hiddenLayer.getNeurons()) {
-            if ((line = reader.readLine()) != null) {
-                neuron.setBias(Double.parseDouble(line));
+            // Laden der Gewichte und Biases der versteckten Schicht
+            for (Neuron neuron : hiddenLayer.getNeurons()) {
+                if ((line = reader.readLine()) != null) {
+                    neuron.setBias(Double.parseDouble(line));
+               }
+               if ((line = reader.readLine()) != null) {
+                  double[] weights = Arrays.stream(line.replace("[", "").replace("]", "").split(","))
+                                           .mapToDouble(Double::parseDouble).toArray();
+                  neuron.setWeights(weights);
+               }
             }
-            if ((line = reader.readLine()) != null) {
-                double[] weights = Arrays.stream(line.replace("[", "").replace("]", "").split(","))
-                                         .mapToDouble(Double::parseDouble).toArray();
-                neuron.setWeights(weights);
-            }
-        }
 
-        // Laden der Gewichte und Biases der Ausgabeschicht
-        for (Neuron neuron : outputLayer.getNeurons()) {
-            if ((line = reader.readLine()) != null) {
-                neuron.setBias(Double.parseDouble(line));
+            // Laden der Gewichte und Biases der Ausgabeschicht
+            for (Neuron neuron : outputLayer.getNeurons()) {
+                if ((line = reader.readLine()) != null) {
+                    neuron.setBias(Double.parseDouble(line));
+                }
+                if ((line = reader.readLine()) != null) {
+                    double[] weights = Arrays.stream(line.replace("[", "").replace("]", "").split(","))
+                            .mapToDouble(Double::parseDouble).toArray();
+                    neuron.setWeights(weights);
+                }
             }
-            if ((line = reader.readLine()) != null) {
-                double[] weights = Arrays.stream(line.replace("[", "").replace("]", "").split(","))
-                                         .mapToDouble(Double::parseDouble).toArray();
-                neuron.setWeights(weights);
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
 
     private double roundDouble(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
@@ -218,5 +167,13 @@ public class Network {
             e.printStackTrace();
         }
 
+    }
+
+    public NeuronLayer getHiddenLayer() {
+        return hiddenLayer;
+    }
+
+    public NeuronLayer getOutputLayer() {
+        return outputLayer;
     }
 }

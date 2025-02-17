@@ -8,10 +8,10 @@ public class Main {
     public static void main(String[] args) {
 
         Data data = new Data();
-        data.createTrainingData(500);
+        data.createTrainingData(1000);
         List<double[]> trainingData = Data.loadTrainingData("trainingsdaten.txt");
         Network network = new Network(2, 4, 1);
-        network.training(500, trainingData);
+        network.training(1000, trainingData);
         double[] input = {10, 10};
         double[] results = network.run(input);
         System.out.println("Input " + Arrays.toString(input));

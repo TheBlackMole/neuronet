@@ -28,9 +28,10 @@ public class GUI implements ActionListener   {
     private JButton B_los;
     private JLabel L_result;
 
-    public GUI(NeuronLayer hiddenLayer, NeuronLayer outputLayer) {
-        this.hiddenLayer=hiddenLayer;
-        this.outputLayer=outputLayer;
+    public GUI(Network network) {
+        this.network = network;
+        this.hiddenLayer=network.getHiddenLayer();
+        this.outputLayer=network.getOutputLayer();
 
         start = new JFrame();
         start.setLayout(new GridLayout());
@@ -64,6 +65,9 @@ public class GUI implements ActionListener   {
                     inputs[1] = i2;
 
                     double[] results = network.run(inputs);
+                    for(int i = 0; i<results.length; i++) {
+                        results[i] = Neuron.roundDouble(results[i],4);
+                    }
                     String S_results = Arrays.toString(results);
                     L_result.setText(S_results);
 
@@ -143,7 +147,7 @@ public class GUI implements ActionListener   {
             @Override
             public void focusLost(FocusEvent e) {
                 // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("erster Input");
+                //throw new UnsupportedOperationException("erster Input");
             }
         });
 
@@ -156,7 +160,7 @@ public class GUI implements ActionListener   {
             @Override
             public void focusLost(FocusEvent e) {
                 // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("erster Input");
+                //throw new UnsupportedOperationException("erster Input");
             }
         });
 
