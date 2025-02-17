@@ -1,3 +1,4 @@
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -8,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Arrays;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -15,6 +17,7 @@ import java.awt.Font;
 public class GUI implements ActionListener   {
     private NeuronLayer hiddenLayer;
     private NeuronLayer outputLayer;
+    private Network network;
 
     private JFrame start;
     private JLabel L_hiddenLayer;
@@ -22,6 +25,7 @@ public class GUI implements ActionListener   {
     private JPanel P_input;
     private JTextField TF_input1;
     private JTextField TF_input2;
+    private JButton B_los;
     private JLabel L_result;
 
     public GUI(NeuronLayer hiddenLayer, NeuronLayer outputLayer) {
@@ -41,8 +45,35 @@ public class GUI implements ActionListener   {
         
         TF_input1 = new JTextField("erster Input");
         TF_input2 = new JTextField("zweiter Input");
+        B_los = new JButton("Berechnen");
+        
+        B_los.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                //throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
+
+            
+                    String Si1 = TF_input1.getText();
+                    String Si2 = TF_input2.getText();
+                    double i1 = Double.parseDouble(Si1);
+                    double i2 = Double.parseDouble(Si2);
+
+                    double[] inputs = new double[2];
+                    inputs[0] = i1;
+                    inputs[1] = i2;
+
+                    double[] results = network.run(inputs);
+                    String S_results = Arrays.toString(results);
+                    L_result.setText(S_results);
+
+                
+            }
+        });
+
         P_input.add(TF_input1);
         P_input.add(TF_input2);
+        P_input.add(B_los);
 
         L_hiddenLayer = new JLabel("HiddenLayer");
         L_hiddenLayer.setFont(new Font("helvetica", Font.BOLD, 20));
@@ -145,4 +176,6 @@ public class GUI implements ActionListener   {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
     }
+
+    
 }
