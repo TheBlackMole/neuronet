@@ -1,18 +1,28 @@
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.Color;
 import java.awt.Font;
 
 
-public class GUI extends JFrame  {
+public class GUI implements ActionListener   {
     private NeuronLayer hiddenLayer;
     private NeuronLayer outputLayer;
 
     private JFrame start;
     private JLabel L_hiddenLayer;
     private JLabel L_outputLayer;
+    private JPanel P_input;
+    private JTextField TF_input1;
+    private JTextField TF_input2;
+    private JLabel L_result;
 
     public GUI(NeuronLayer hiddenLayer, NeuronLayer outputLayer) {
         this.hiddenLayer=hiddenLayer;
@@ -21,10 +31,18 @@ public class GUI extends JFrame  {
         start = new JFrame();
         start.setLayout(new GridLayout());
        // start.setLayout(new GridLayout(1, 2));
-        start.setSize(700, 600);
+        start.setSize(900, 600);
         start.setBackground(Color.LIGHT_GRAY);
         start.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         start.setTitle("GUI Start");
+
+        P_input = new JPanel();
+        P_input.setLayout(new GridLayout(0,1));
+        
+        TF_input1 = new JTextField("erster Input");
+        TF_input2 = new JTextField("zweiter Input");
+        P_input.add(TF_input1);
+        P_input.add(TF_input2);
 
         L_hiddenLayer = new JLabel("HiddenLayer");
         L_hiddenLayer.setFont(new Font("helvetica", Font.BOLD, 20));
@@ -35,6 +53,8 @@ public class GUI extends JFrame  {
         L_outputLayer.setFont(new Font("helvetica", Font.BOLD, 20));
         L_outputLayer.setHorizontalAlignment(JLabel.CENTER);
         L_outputLayer.setOpaque(true);
+
+
 
         // Panel für jedes Neuron im hiddenLayer
         JPanel neuronWeightsPanel = new JPanel();
@@ -78,15 +98,51 @@ public class GUI extends JFrame  {
             P_neuronBiasOutput.add(L_bias);
         }
 
+        L_result = new JLabel("Ergebnis: ");
+        L_result.setFont(new Font("helvetica", Font.BOLD, 20));
+        L_result.setHorizontalAlignment(JLabel.CENTER);
+        L_result.setOpaque(true);
+
+        TF_input1.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                TF_input1.setText("");
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("erster Input");
+            }
+        });
+
+        TF_input2.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                TF_input2.setText("");
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("erster Input");
+            }
+        });
+
+        start.add(P_input);
+    
         start.add(neuronWeightsPanel);
         start.add(P_neuronBiasHidden);
         
         start.add(P_neuronWeightsOutput);
         start.add(P_neuronBiasOutput);
-        //start.add(neuronPanel);
-        
-        //start.add(L_outputLayer);
-        //start.add(L_hiddenLayer);
+        start.add(L_result);
         start.setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
     }
 }
