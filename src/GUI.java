@@ -3,6 +3,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -43,6 +44,7 @@ public class GUI implements ActionListener   {
 
         P_input = new JPanel();
         P_input.setLayout(new GridLayout(0,1));
+        P_input.setBorder(new EmptyBorder(5, 05, 05, 05));
         
         TF_input1 = new JTextField("erster Input");
         TF_input2 = new JTextField("zweiter Input");
@@ -54,7 +56,6 @@ public class GUI implements ActionListener   {
                 // TODO Auto-generated method stub
                 //throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
 
-            
                     String Si1 = TF_input1.getText();
                     String Si2 = TF_input2.getText();
                     double i1 = Double.parseDouble(Si1);
@@ -94,6 +95,7 @@ public class GUI implements ActionListener   {
         // Panel für jedes Neuron im hiddenLayer
         JPanel neuronWeightsPanel = new JPanel();
         neuronWeightsPanel.setLayout(new GridLayout(0, 1));
+        neuronWeightsPanel.setBorder(new EmptyBorder(5,5,5,5));
         int stelleNeuron = 0;
         for (Neuron  neuron : hiddenLayer.getNeurons()) {
             stelleNeuron++;
@@ -107,6 +109,7 @@ public class GUI implements ActionListener   {
 
         JPanel P_neuronBiasHidden = new JPanel();
         P_neuronBiasHidden.setLayout(new GridLayout(0,1));
+        P_neuronBiasHidden.setBorder(new EmptyBorder(5,5,5,5));
         for (Neuron neuron : hiddenLayer.getNeurons()) {
             JLabel L_bias = new JLabel( "Bias: " + neuron.getBias());
             P_neuronBiasHidden.add(L_bias);
@@ -115,6 +118,7 @@ public class GUI implements ActionListener   {
         // Panel für jedes Neuron im outputLayer
         JPanel P_neuronWeightsOutput = new JPanel();
         P_neuronWeightsOutput.setLayout(new GridLayout(0, 1));
+        P_neuronWeightsOutput.setBorder(new EmptyBorder(5,5,5,5));
         int stelleNeuronOutput = 0;
         for (Neuron  neuron : outputLayer.getNeurons()) {
             stelleNeuronOutput++;
@@ -128,6 +132,7 @@ public class GUI implements ActionListener   {
 
         JPanel P_neuronBiasOutput = new JPanel();
         P_neuronBiasOutput.setLayout(new GridLayout(0,1));
+        P_neuronBiasOutput.setBorder(new EmptyBorder(5,5,5,5));
         for (Neuron neuron : outputLayer.getNeurons()) {
             JLabel L_bias = new JLabel( "Bias: " + neuron.getBias());
             P_neuronBiasOutput.add(L_bias);
