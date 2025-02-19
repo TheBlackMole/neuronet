@@ -8,14 +8,13 @@ public class Main {
     public static void main(String[] args) {
 
         Data data = new Data();
-        data.createTrainingData(1000);
-        List<double[]> trainingData = Data.loadTrainingData("trainingsdaten.txt");
+        data.createTrainingData2(100);
+        List<double[]> trainingData = Data.loadTrainingData("training_data.csv");
         Network network = new Network(2, 4, 1);
         network.training(1000, trainingData);
         double[] input = {10, 10};
         double[] results = network.run(input);
         System.out.println("Input " + Arrays.toString(input));
-        //new GUI(hiddenLayer, outputLayer);
         for(double result : results) {
             System.out.println(Neuron.roundDouble(result,3));
         }

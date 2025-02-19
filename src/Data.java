@@ -12,6 +12,36 @@ public class Data {
 
     }
 
+    public void createTrainingData2(int dataSize) {
+        Random random = new Random();
+        StringBuilder data = new StringBuilder("Input1, Input2, Output\n");
+
+        for (int i = 0; i < dataSize; i++) {
+            int input1 = random.nextInt(10) + 1;
+            int input2 = random.nextInt(10) + 1;
+            double output = calculateOutput(input1, input2);
+            data.append(input1).append(", ").append(input2).append(", ").append(output).append("\n");
+        }
+
+        try (FileWriter fileWriter = new FileWriter("training_data.csv")) {
+            fileWriter.write(data.toString());
+            System.out.println(dataSize + " Trainingsdatensätze wurden in 'training_data.csv' gespeichert.");
+        } catch (IOException e) {
+            System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
+        }
+    }
+
+    public static double calculateOutput(int input1, int input2) {
+        if (input1 == input2) {
+            return 0;
+        } else if (input1 > input2) {
+            return -1.0 * Math.abs(input1 - input2) / 10;
+        } else {
+            return Math.abs(input1 - input2) / 10;
+        }
+    }
+    
+
     public void createTrainingData(int dataSize) {
         String filename = "trainingsdaten.txt";
         Random rand = new Random();

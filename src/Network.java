@@ -37,8 +37,8 @@ public class Network {
     public double[] run(double[] input) {
         //System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, "leakyReLu");
-        return outputLayer.forward(resultsHiddenLayer, "sigmoid");
+        double[] resultsHiddenLayer = hiddenLayer.forward(input, "tanh");
+        return outputLayer.forward(resultsHiddenLayer, "tanh");
     }
 
     public void training(int trainingSize, List<double[]> trainingData) {
@@ -68,6 +68,7 @@ public class Network {
                 saveWeightsAndBiases("weights_biases.txt");
                 costs.add(newCost);
             }
+            
 
         }
 
@@ -86,6 +87,9 @@ public class Network {
             input[1] = trainingData.get(n)[1];
             trainingResult[0] = trainingData.get(n)[2];
             networkResult = run(input);
+            System.out.println("Input: " + input[0] + ", " + input[1]);
+            System.out.println("trainingResult: " + trainingResult[0]);
+            System.out.println("Ergebnis: " + networkResult[0]);
             cost += calculateCostFunction(networkResult, trainingResult);
         }
         return cost;
