@@ -37,7 +37,7 @@ public class Network {
     public double[] run(double[] input) {
         //System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, "leakyReLu");
+        double[] resultsHiddenLayer = hiddenLayer.forward(input, "linear");
         return outputLayer.forward(resultsHiddenLayer, "tanh");
     }
 
