@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
         Data data = new Data();
-        data.createTrainingData2(100);
+        data.createTrainingData2(1000);
         List<double[]> trainingData = Data.loadTrainingData("training_data.csv");
         Network network = new Network(2, 4, 1);
         network.training(1000, trainingData);
@@ -23,9 +23,9 @@ public class Main {
         for(int i = 0; i < 50; i++) { // Verschieden In- und Outputs testen -> aktuell führen ALLE zum selben Ergebnis
             int x = r.nextInt(100) + 1;
             //int y = r.nextInt(100) + 1;
-            int y = x + i;
-            input[0] = Math.min(x,y);
-            input[1] = Math.max(x,y);
+            int y = x - i;
+            input[0] = x;
+            input[1] = y;
             results = network.run(input);
             System.out.println("Input " + Arrays.toString(input));
             System.out.println(Neuron.roundDouble(results[0],3));

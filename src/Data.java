@@ -17,9 +17,9 @@ public class Data {
         StringBuilder data = new StringBuilder("Input1, Input2, Output\n");
 
         for (int i = 0; i < dataSize; i++) {
-            int input1 = random.nextInt(10) + 1;
-            int input2 = random.nextInt(10) + 1;
-            double output = calculateOutput(input1, input2);
+            int input1 = random.nextInt(100) + 1;
+            int input2 = random.nextInt(100) + 1;
+            double output = Neuron.roundDouble(calculateOutput(input1, input2), 4);
             data.append(input1).append(", ").append(input2).append(", ").append(output).append("\n");
         }
 
@@ -32,13 +32,18 @@ public class Data {
     }
 
     public static double calculateOutput(int input1, int input2) {
+        // Tanh-Funktion als Rückgabe
+        return (2 / (1 + Math.exp(-0.1 * (input2-input1)))) - 1;
+        /*
         if (input1 == input2) {
             return 0;
         } else if (input1 > input2) {
             return -1.0 * Math.abs(input1 - input2) / 10;
         } else {
-            return Math.abs(input1 - input2) / 10;
+            return (double) Math.abs(input1 - input2) / 10;
         }
+
+        */
     }
     
 
