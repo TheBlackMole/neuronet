@@ -65,7 +65,7 @@ public class GUI implements ActionListener   {
                     inputs[0] = i1;
                     inputs[1] = i2;
 
-                    double[] results = network.run(inputs);
+                    double[] results = network.run(inputs, null);
                     for(int i = 0; i<results.length; i++) {
                         results[i] = Neuron.roundDouble(results[i],4);
                     }

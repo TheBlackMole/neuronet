@@ -3,19 +3,27 @@ import java.util.Random;
 
 public class NeuronLayer {
     private Neuron[] neurons;
+    private String activationFunction;
 
     public NeuronLayer(int numNeurons, int inputSize) {
         neurons = new Neuron[numNeurons];
         for (int i = 0; i < numNeurons; i++) {
             neurons[i] = new Neuron(inputSize);
         }
+        activationFunction= "sigmoid";
     }
 
     public double[] forward(double[] input, String type) {
+        String activationF;
+        if (type != null) {
+            activationF = type;
+        } else{
+            activationF = activationFunction;
+        }
         double[] output = new double[neurons.length];
         int i = 0;
         for(Neuron n : neurons) {
-            output[i] = n.activate(type, 0.25 , input);
+            output[i] = n.activate(activationF, 0.25 , input);
             i++;
         }
         return output;
@@ -72,6 +80,12 @@ public class NeuronLayer {
     }
     public Neuron getNeuron(int i) {
         return neurons[i];
+    }
+    public void setActivationFunction(String a) {
+        this.activationFunction=a;
+    }
+    public String getActivationFunction() {
+        return activationFunction;
     }
 
     public NeuronLayer getCopy() {
