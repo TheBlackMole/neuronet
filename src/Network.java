@@ -21,8 +21,9 @@ public class Network {
     int hiddenLayerSize;
     int outputLayerSize;
     List<Double> costs;
+    public static List<double[]> trainingData = null;
 
-    public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize) {
+    public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int trainingDataSize) {
         this.inputLayerSize = inputLayerSize;
         this.hiddenLayerSize = hiddenLayerSize;
         this.outputLayerSize = outputLayerSize;
@@ -30,28 +31,88 @@ public class Network {
         outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
         loadWeightsAndBiases("weights_biases.txt");
         costs = new ArrayList<Double>();
+        Data.createTrainingData2(trainingDataSize);
+        trainingData = Data.loadTrainingData("training_data.csv");
 
         new GUI(this);
     }
 
-    public double[] run(double[] input, String type) {
+    public double[] run(double[] input) {
         //System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, type);
-        return outputLayer.forward(resultsHiddenLayer, type);
+        double[] resultsHiddenLayer = hiddenLayer.forward(input, null);
+        return outputLayer.forward(resultsHiddenLayer, ActivationFunction.TANH);
     }
 
-    public void training(int trainingSize, List<double[]> trainingData) {
+    public void preTraining() {
+        double oldCost = 0;
+        double newCost = 0;
+        double[] activationCosts = new double[4];
+
+        ActivationFunction[] activationFunctions= new ActivationFunction[]{
+                ActivationFunction.SIGMOID,
+                ActivationFunction.TANH,
+                ActivationFunction.LEAKYRELU,
+                ActivationFunction.LINEAR
+        };
+
+        // Vier mal "Antrainieren" mit den verschiedenen Aktivierungsfunktionen
+        for(int n = 0; n<4; n++) {
+            hiddenLayer.setActivationFunction(activationFunctions[n]);
+            loadWeightsAndBiases("weights_biases.txt");
+            // "Antrainieren"
+            for(int i = 0; i<200; i++) {
+                oldCost = calculateCurrentCostSum(trainingData);
+
+                // Altes Netz sichern
+                saveWeightsAndBiases("new_weights_biases.txt");
+
+                // Layer anpassen
+                hiddenLayer.changeValue(oldCost); // Hiddenlayer wird geändert
+                outputLayer.changeValue(oldCost); // Outputlayer wird geändert
+
+                // Neue Kosten berechnen
+                newCost = calculateCurrentCostSum(trainingData);
+
+                if (oldCost < newCost) { // Wenn Verschlechterung
+                    loadWeightsAndBiases("new_weights_biases.txt");
+                    costs.add(oldCost);
+                } else { // Wenn Verbesserung
+                    saveWeightsAndBiases("new_weights_biases.txt");
+                    costs.add(newCost);
+                }
+            }
+            activationCosts[n] = newCost;
+        }
+        int lowestIndex = 0;
+        for(int i = 0; i<4; i++) {
+            if(activationCosts[i] < activationCosts[lowestIndex]) {
+                lowestIndex = i;
+            }
+        }
+
+        hiddenLayer.setActivationFunction(activationFunctions[lowestIndex]);
+        System.out.println(activationFunctions[lowestIndex].toString());
+
+        loadWeightsAndBiases("weights_biases.txt");
+    }
+
+
+
+    public void training(int trainingSize) {
         //Random r = new Random();
 
-        double oldCost;
-        double newCost;
 
+        double oldCost = 0;
+        double newCost = 0;
+
+        preTraining();
+        //hiddenLayer.setActivationFunction(ActivationFunction.LINEAR);
 
         for(int i = 0; i < trainingSize; i++) {
             
             // Alte Kosten berechnen
-            oldCost = calculateCurrentCostSum(trainingData, null);
+            oldCost = calculateCurrentCostSum(trainingData);
 
             // Altes Netz sichern
             saveWeightsAndBiases("weights_biases.txt");
@@ -59,17 +120,9 @@ public class Network {
             // Layer anpassen
             hiddenLayer.changeValue(oldCost); // Hiddenlayer wird geändert
             outputLayer.changeValue(oldCost); // Outputlayer wird geändert
-            System.out.println("Fehler vorher: " + calculateCurrentCostSum(trainingData, null));
 
-            System.out.println("Activation vorher hidden: " + hiddenLayer.getActivationFunction());
-            System.out.println("Avtivation vorher out: " + outputLayer.getActivationFunction());
-            changeActivationFunktion(hiddenLayer, outputLayer, trainingData);
-            System.out.println("Activation nacher hidden: " + hiddenLayer.getActivationFunction());
-            System.out.println("Avtivation nacher out: " + outputLayer.getActivationFunction());
-
-            System.out.println("Fehler nacher: " + calculateCurrentCostSum(trainingData, null) + "\n");
             // Neue Kosten berechnen
-            newCost = calculateCurrentCostSum(trainingData, null);
+            newCost = calculateCurrentCostSum(trainingData);
 
             if (oldCost < newCost) { // Wenn Verschlechterung
                 loadWeightsAndBiases("weights_biases.txt");
@@ -83,19 +136,25 @@ public class Network {
         }
 
         printCost();
+        System.out.println("Das Training wurde abgeschlossen");
 
     }
 
     private void changeActivationFunktion(NeuronLayer hidden, NeuronLayer output, List<double[]> trainingData) {
         //Kosten mit allen Möglichkeiten der Aktivierungsfunktionen ausrechen und die Kosten in Array speichern
         Double[] costs = new Double[16];
-        String[] activationF= new String[]{"sigmoid","tanh", "leakyReLu", "linear" };
+        ActivationFunction[] activationFunctions= new ActivationFunction[]{
+                ActivationFunction.SIGMOID,
+                ActivationFunction.TANH,
+                ActivationFunction.LEAKYRELU,
+                ActivationFunction.LINEAR
+        };
         int stelle=0;
         for(int i=0; i<=3; i++) {
-            hiddenLayer.setActivationFunction(activationF[i]);
+            hiddenLayer.setActivationFunction(activationFunctions[i]);
             for(int y = 0; y<=3; y++){
-                outputLayer.setActivationFunction(activationF[y]);
-                costs[stelle]=calculateCurrentCostSum(trainingData, null);
+                outputLayer.setActivationFunction(activationFunctions[y]);
+                costs[stelle]=calculateCurrentCostSum(trainingData);
                 stelle++;
             }
         }
@@ -111,19 +170,19 @@ public class Network {
         minIndex++;
         //kleinsten Aktivierungen setzen
         if (minIndex == 16) {
-            hiddenLayer.setActivationFunction(activationF[3]);
-            outputLayer.setActivationFunction(activationF[3]);
+            hiddenLayer.setActivationFunction(activationFunctions[3]);
+            outputLayer.setActivationFunction(activationFunctions[3]);
         } else {
             int hiddenStelle = minIndex / 4 +1;
             int outputStelle = minIndex - ((hiddenStelle-1)*4);
-            hiddenLayer.setActivationFunction(activationF[hiddenStelle-1]);
-            outputLayer.setActivationFunction(activationF[outputStelle]);
+            hiddenLayer.setActivationFunction(activationFunctions[hiddenStelle-1]);
+            outputLayer.setActivationFunction(activationFunctions[outputStelle]);
         }
         
     }
 
     // Berechnet die summierten Kosten aller Trainingsdaten
-    private double calculateCurrentCostSum(List<double[]> trainingData, String activeType) {
+    private double calculateCurrentCostSum(List<double[]> trainingData) {
         double cost = 0;
         double[] input = new double[inputLayerSize];
         double[] trainingResult = new double[outputLayerSize];
@@ -132,7 +191,7 @@ public class Network {
             input[0] = trainingData.get(n)[0];
             input[1] = trainingData.get(n)[1];
             trainingResult[0] = trainingData.get(n)[2];
-            networkResult = run(input, activeType);
+            networkResult = run(input);
             /*
             System.out.println("Input: " + input[0] + ", " + input[1]);
             System.out.println("trainingResult: " + trainingResult[0]);
@@ -209,6 +268,7 @@ public class Network {
         return cost;
     }
 
+    /*
     public static String findMinVariable(double a, double b, double c, double d) {
         double minValue = a;
         String minVariable = "sigmoid";
@@ -228,6 +288,8 @@ public class Network {
 
         return minVariable;
     }
+
+     */
 
     // Kosten in Datei speichern
     private void printCost() {

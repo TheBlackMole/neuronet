@@ -3,18 +3,18 @@ import java.util.Random;
 
 public class NeuronLayer {
     private Neuron[] neurons;
-    private String activationFunction;
+    private ActivationFunction activationFunction;
 
     public NeuronLayer(int numNeurons, int inputSize) {
         neurons = new Neuron[numNeurons];
         for (int i = 0; i < numNeurons; i++) {
             neurons[i] = new Neuron(inputSize);
         }
-        activationFunction= "sigmoid";
+        activationFunction = ActivationFunction.SIGMOID;
     }
 
-    public double[] forward(double[] input, String type) {
-        String activationF;
+    public double[] forward(double[] input, ActivationFunction type) {
+        ActivationFunction activationF;
         if (type != null) {
             activationF = type;
         } else{
@@ -27,8 +27,8 @@ public class NeuronLayer {
             i++;
         }
         return output;
-        // Alte Methode, kp wie das funktioniert
-        /*
+
+        /* Alte Methode, kp wie das funktioniert
         return Arrays.stream(neurons)
                 .mapToDouble(neuron -> neuron.activate(inputs))
                 .toArray();
@@ -55,7 +55,7 @@ public class NeuronLayer {
         neurons[index].setWeights(weights);
     }
     
-
+    /*
     public void changeSingleValue(double cost) { // Aktuell nicht in Benutzung
         Random r = new Random();
         double change = r.nextDouble() * 0.2 - 0.1; // zufallszahl zw. -0.1 und 0.1
@@ -70,6 +70,7 @@ public class NeuronLayer {
             neurons[index].setWeights(weights);
         }
     }
+     */
 
     public void setNeurons(Neuron[] neurons) {
         this.neurons = neurons;
@@ -81,10 +82,10 @@ public class NeuronLayer {
     public Neuron getNeuron(int i) {
         return neurons[i];
     }
-    public void setActivationFunction(String a) {
+    public void setActivationFunction(ActivationFunction a) {
         this.activationFunction=a;
     }
-    public String getActivationFunction() {
+    public ActivationFunction getActivationFunction() {
         return activationFunction;
     }
 

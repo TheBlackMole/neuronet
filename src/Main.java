@@ -5,15 +5,13 @@ import java.util.Random;
 public class Main {
 
 
+
     public static void main(String[] args) {
 
-        Data data = new Data();
-        data.createTrainingData2(500);
-        List<double[]> trainingData = Data.loadTrainingData("training_data.csv");
-        Network network = new Network(2, 4, 1);
-        network.training(1000, trainingData);
+        Network network = new Network(2, 4, 1, 1000);
+        network.training(1000);
         double[] input = {10, 10};
-        double[] results = network.run(input, null);
+        double[] results = network.run(input);
         System.out.println("Input " + Arrays.toString(input));
         for(double result : results) {
             System.out.println(Neuron.roundDouble(result,3));
@@ -26,7 +24,7 @@ public class Main {
             int y = x - i;
             input[0] = x;
             input[1] = y;
-            results = network.run(input, null);
+            results = network.run(input);
             System.out.println("Input " + Arrays.toString(input));
             System.out.println(Neuron.roundDouble(results[0],3));
         }

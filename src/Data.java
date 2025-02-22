@@ -12,7 +12,7 @@ public class Data {
 
     }
 
-    public void createTrainingData2(int dataSize) {
+    public static void createTrainingData2(int dataSize) {
         Random random = new Random();
         StringBuilder data = new StringBuilder("Input1, Input2, Output\n");
 

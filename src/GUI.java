@@ -10,9 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.awt.Color;
 import java.awt.Font;
+import java.util.List;
 
 
 public class GUI implements ActionListener   {
@@ -27,6 +29,7 @@ public class GUI implements ActionListener   {
     private JTextField TF_input1;
     private JTextField TF_input2;
     private JButton B_los;
+    private JButton B_trainieren;
     private JLabel L_result;
 
     public GUI(Network network) {
@@ -49,7 +52,8 @@ public class GUI implements ActionListener   {
         TF_input1 = new JTextField("erster Input");
         TF_input2 = new JTextField("zweiter Input");
         B_los = new JButton("Berechnen");
-        
+        B_trainieren = new JButton("Trainieren");
+
         B_los.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -65,20 +69,33 @@ public class GUI implements ActionListener   {
                     inputs[0] = i1;
                     inputs[1] = i2;
 
-                    double[] results = network.run(inputs, null);
+                    double[] results = network.run(inputs);
                     for(int i = 0; i<results.length; i++) {
                         results[i] = Neuron.roundDouble(results[i],4);
                     }
                     String S_results = Arrays.toString(results);
                     L_result.setText(S_results);
 
-                
+
             }
         });
+        B_trainieren.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO Auto-generated method stub
+                //throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
+
+                network.training(1000);
+
+
+            }
+        });
+
 
         P_input.add(TF_input1);
         P_input.add(TF_input2);
         P_input.add(B_los);
+        P_input.add(B_trainieren);
 
         L_hiddenLayer = new JLabel("HiddenLayer");
         L_hiddenLayer.setFont(new Font("helvetica", Font.BOLD, 20));
