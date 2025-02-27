@@ -34,16 +34,16 @@ public class NeuronLayer {
                 .toArray();
         */
     }
-    public void changeValue(double cost) { // Ändert das Bias und EIN Weight eines zufälligen Neurons aus dem Layer
+    public void changeValue(double cost, double learningRate) { // Ändert das Bias und EIN Weight eines zufälligen Neurons aus dem Layer
         if (cost == 0) { // Wichtig: Abhängig von den Kosten, + oder - ist zufällig
             return;
         }
         Random r = new Random();
         double change;
         if (r.nextBoolean()) {
-            change = 0.01;
+            change = learningRate;
         } else {
-            change = -0.01;
+            change = -learningRate;
         }
         int index = r.nextInt(neurons.length);
         // Bias verändern

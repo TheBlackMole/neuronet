@@ -18,7 +18,7 @@ public class Main {
         }
         System.out.println("\n\n\n");
         Random r = new Random();
-        for(int i = 0; i < 50; i++) { // Verschieden In- und Outputs testen -> aktuell führen ALLE zum selben Ergebnis
+        for(int i = 0; i < 50; i++) { // Verschieden In- und Outputs testen
             int x = r.nextInt(100) + 1;
             //int y = r.nextInt(100) + 1;
             int y = x - i;

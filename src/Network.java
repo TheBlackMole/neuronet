@@ -75,8 +75,8 @@ public class Network {
                 saveWeightsAndBiases("new_weights_biases.txt");
 
                 // Layer anpassen
-                hiddenLayer.changeValue(oldCost); // Hiddenlayer wird geändert
-                outputLayer.changeValue(oldCost); // Outputlayer wird geändert
+                hiddenLayer.changeValue(oldCost, 0.01); // Hiddenlayer wird geändert
+                outputLayer.changeValue(oldCost, 0.01); // Outputlayer wird geändert
 
                 // Neue Kosten berechnen
                 newCost = calculateCurrentCostSum(trainingData);
@@ -85,7 +85,7 @@ public class Network {
                     loadWeightsAndBiases("new_weights_biases.txt");
                     //costs.add(oldCost);
                 } else { // Wenn Verbesserung
-                    saveWeightsAndBiases("new_weights_biases.txt");
+                    //saveWeightsAndBiases("new_weights_biases.txt");
                     //costs.add(newCost);
                 }
             }
@@ -101,7 +101,6 @@ public class Network {
         hiddenLayer.setActivationFunction(activationFunctions[lowestIndex]);
         System.out.println(activationFunctions[lowestIndex].toString());
 
-        loadWeightsAndBiases("weights_biases.txt");
     }
 
 
@@ -131,6 +130,7 @@ public class Network {
             preTraining();
         }
 
+        loadWeightsAndBiases("weights_biases.txt");
         //hiddenLayer.setActivationFunction(ActivationFunction.LINEAR);
 
         for(int i = 0; i < trainingSize; i++) {
@@ -142,8 +142,8 @@ public class Network {
             saveWeightsAndBiases("weights_biases.txt");
 
             // Layer anpassen
-            hiddenLayer.changeValue(oldCost); // Hiddenlayer wird geändert
-            outputLayer.changeValue(oldCost); // Outputlayer wird geändert
+            hiddenLayer.changeValue(oldCost, 0.001); // Hiddenlayer wird geändert
+            outputLayer.changeValue(oldCost, 0.001); // Outputlayer wird geändert
 
             // Neue Kosten berechnen
             newCost = calculateCurrentCostSum(trainingData);
