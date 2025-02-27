@@ -34,9 +34,16 @@ public class GUI implements ActionListener   {
 
     public GUI(Network network) {
         this.network = network;
-        this.hiddenLayer=network.getHiddenLayer();
-        this.outputLayer=network.getOutputLayer();
+        this.hiddenLayer = network.getHiddenLayer();
+        this.outputLayer = network.getOutputLayer();
+        init();
+    }
 
+    public void init() {
+        // Altes Fenster löschen
+        if(start != null) {
+            start.setVisible(false);
+        }
         start = new JFrame();
         start.setLayout(new GridLayout());
        // start.setLayout(new GridLayout(1, 2));
@@ -86,7 +93,6 @@ public class GUI implements ActionListener   {
                 //throw new UnsupportedOperationException("Unimplemented method 'actionPerformed'");
 
                 network.training(1000);
-
 
             }
         });

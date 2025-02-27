@@ -22,6 +22,7 @@ public class Network {
     int outputLayerSize;
     List<Double> costs;
     public static List<double[]> trainingData = null;
+    private GUI gui;
 
     public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int trainingDataSize) {
         this.inputLayerSize = inputLayerSize;
@@ -29,12 +30,17 @@ public class Network {
         this.outputLayerSize = outputLayerSize;
         hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
         outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
-        loadWeightsAndBiases("weights_biases.txt");
+        try {
+            loadWeightsAndBiases("weights_biases.txt");
+        }
+        catch (Exception e) {
+            System.err.println("Die Datei 'weights_biases.txt' konnte nicht geladen werden.");
+        }
         costs = new ArrayList<Double>();
         Data.createTrainingData2(trainingDataSize);
         trainingData = Data.loadTrainingData("training_data.csv");
 
-        new GUI(this);
+        gui = new GUI(this);
     }
 
     public double[] run(double[] input) {
@@ -57,11 +63,12 @@ public class Network {
         };
 
         // Vier mal "Antrainieren" mit den verschiedenen Aktivierungsfunktionen
+        saveWeightsAndBiases("weights_biases.txt");
         for(int n = 0; n<4; n++) {
             hiddenLayer.setActivationFunction(activationFunctions[n]);
             loadWeightsAndBiases("weights_biases.txt");
             // "Antrainieren"
-            for(int i = 0; i<200; i++) {
+            for(int i = 0; i<500; i++) {
                 oldCost = calculateCurrentCostSum(trainingData);
 
                 // Altes Netz sichern
@@ -76,10 +83,10 @@ public class Network {
 
                 if (oldCost < newCost) { // Wenn Verschlechterung
                     loadWeightsAndBiases("new_weights_biases.txt");
-                    costs.add(oldCost);
+                    //costs.add(oldCost);
                 } else { // Wenn Verbesserung
                     saveWeightsAndBiases("new_weights_biases.txt");
-                    costs.add(newCost);
+                    //costs.add(newCost);
                 }
             }
             activationCosts[n] = newCost;
@@ -106,7 +113,24 @@ public class Network {
         double oldCost = 0;
         double newCost = 0;
 
-        preTraining();
+        try (BufferedReader reader = new BufferedReader(new FileReader("trainingdoc.txt"))) {
+            String line;
+            line = reader.readLine();
+            oldCost = Double.parseDouble(line);
+            line = reader.readLine();
+            ActivationFunction activationFunction = ActivationFunction.getActivation(line);
+            if(oldCost>2) {
+                System.out.println("Pretraining wird durchgeführt, da die Kosten >2 sind.");
+                preTraining();
+            } else {
+                System.out.println("Pretraining wird uebersprungen, da die Kosten <=2 sind.");
+                hiddenLayer.setActivationFunction(activationFunction);
+            }
+        } catch (IOException e) {
+            System.out.println("Pretraining wird durchgeführt, da dies der erste Durchlauf ist.");
+            preTraining();
+        }
+
         //hiddenLayer.setActivationFunction(ActivationFunction.LINEAR);
 
         for(int i = 0; i < trainingSize; i++) {
@@ -136,7 +160,14 @@ public class Network {
         }
 
         printCost();
-        System.out.println("Das Training wurde abgeschlossen");
+        gui.init();
+        try (FileWriter file = new FileWriter("trainingdoc.txt")) {
+            file.write(Neuron.roundDouble(newCost, 4) + "\n");
+            file.write(hiddenLayer.getActivationFunction().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Das Training wurde abgeschlossen. Neue Kosten: " + Neuron.roundDouble(costs.getLast(), 4));
 
     }
 
@@ -248,7 +279,7 @@ public class Network {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Load Weights and Bias: Datei konnte nich gefunden werden");
         }
     }
 
