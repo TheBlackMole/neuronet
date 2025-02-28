@@ -21,6 +21,17 @@ public class Neuron {
         } */
     }
 
+    public double process(double[] input){
+        if (input.length != weights.length) {
+            throw new IllegalArgumentException("Input Anzahl in das Layer stimmt nicht mit der Anzahl der Weights überein");
+        }
+        double sum = bias;
+        for (int i = 0; i < input.length; i++) {
+            sum += input[i]*weights[i];
+        }
+        return sum;
+    }
+
     public double activate(ActivationFunction type, double ratio, double[] inputs) {
         //System.out.println("Inputs: " + inputs.length + " weights: "+ weights.length);
         if (inputs.length != weights.length) {

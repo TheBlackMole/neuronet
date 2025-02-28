@@ -15,21 +15,29 @@ import java.util.Random;
 
 public class Network {
 
-    private NeuronLayer hiddenLayer;
-    private NeuronLayer outputLayer;
+    //private NeuronLayer hiddenLayer;
+    //private NeuronLayer outputLayer;
     int inputLayerSize;
-    int hiddenLayerSize;
+    //int hiddenLayerSize;
     int outputLayerSize;
     List<Double> costs;
     public static List<double[]> trainingData = null;
     private GUI gui;
 
-    public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int trainingDataSize) {
+    private List<Integer> hiddenLayerSizes;
+    private List<List<Neuron>> layers;
+
+
+    public Network(int inputLayerSize, List<Integer> hiddenLayerSizes, int outputLayerSize, int trainingDataSize) {
         this.inputLayerSize = inputLayerSize;
-        this.hiddenLayerSize = hiddenLayerSize;
+        //this.hiddenLayerSize = hiddenLayerSize;
         this.outputLayerSize = outputLayerSize;
-        hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
-        outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
+        this.hiddenLayerSizes = hiddenLayerSizes;
+        this.layers = new ArrayList<>();
+        //hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
+        //outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
+        initializeNetwork();
+
         try {
             loadWeightsAndBiases("weights_biases.txt");
         }
@@ -43,11 +51,47 @@ public class Network {
         gui = new GUI(this);
     }
 
+    private void initializeNetwork(){
+        List<Neuron> inputLayer = createLayer(inputLayerSize, 0);
+        layers.add(inputLayer);
+
+        int previousLayerSize = inputLayerSize;
+        for (int hiddenLayerSize : hiddenLayerSizes) {
+            List<Neuron> hiddenLayer = createLayer(hiddenLayerSize, previousLayerSize);
+            layers.add(hiddenLayer);
+            previousLayerSize = hiddenLayerSize;
+        }
+
+        List<Neuron> outputLayer = createLayer(outputLayerSize, previousLayerSize);
+        layers.add(outputLayer);
+    }
+
+    private List<Neuron> createLayer(int size, int previousLayerSize){
+        List<Neuron> layer = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            layer.add(new Neuron(previousLayerSize));
+        }
+        return layer;
+    }
+
     public double[] run(double[] input) {
         //System.out.println("Inputs: " + input [0] + " " + input[1]);
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, null);
-        return outputLayer.forward(resultsHiddenLayer, ActivationFunction.TANH);
+        //double[] resultsHiddenLayer = hiddenLayer.forward(input, null);
+        //return outputLayer.forward(resultsHiddenLayer, ActivationFunction.TANH);
+        double[] output = input;
+        for (List<Neuron> layer : layers) {
+            output = processLayer(output, layer);
+        }
+        return output;
+    }
+
+    private double[] processLayer(double[] input, List<Neuron> layer) {
+        double[] output = new double[layer.size()];
+        for (int i = 0; i < layer.size(); i++) {
+            output[i] = layer.get(i).process(input);
+        }
+        return output;
     }
 
     public void preTraining() {
@@ -65,7 +109,8 @@ public class Network {
         // Vier mal "Antrainieren" mit den verschiedenen Aktivierungsfunktionen
         saveWeightsAndBiases("weights_biases.txt");
         for(int n = 0; n<4; n++) {
-            hiddenLayer.setActivationFunction(activationFunctions[n]);
+            setActivationFunctionForAllHiddenLayers(activationFunctions[n]);
+            //hiddenLayer.setActivationFunction(activationFunctions[n]);
             loadWeightsAndBiases("weights_biases.txt");
             // "Antrainieren"
             for(int i = 0; i<500; i++) {
@@ -75,8 +120,9 @@ public class Network {
                 saveWeightsAndBiases("new_weights_biases.txt");
 
                 // Layer anpassen
-                hiddenLayer.changeValue(oldCost, 0.01); // Hiddenlayer wird geändert
-                outputLayer.changeValue(oldCost, 0.01); // Outputlayer wird geändert
+                //hiddenLayer.changeValue(oldCost, 0.01); // Hiddenlayer wird geändert
+                //outputLayer.changeValue(oldCost, 0.01); // Outputlayer wird geändert
+                changeValesForAllLayers(oldCost, 0.01);
 
                 // Neue Kosten berechnen
                 newCost = calculateCurrentCostSum(trainingData);
@@ -98,7 +144,11 @@ public class Network {
             }
         }
 
-        hiddenLayer.setActivationFunction(activationFunctions[lowestIndex]);
+        //hiddenLayer.setActivationFunction(activationFunctions[lowestIndex]);
+        //setActivationFunctionForAllHiddenLayers(lowestIndex);
+        for (int i = 1; i < layers.size()-1; i++) {
+            layers.get(i).setActivationFunction(activationFunctions[lowestIndex]);
+        }
         System.out.println(activationFunctions[lowestIndex].toString());
 
     }
