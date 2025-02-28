@@ -21,7 +21,7 @@ public class Neuron {
         } */
     }
 
-    public double activate(String type, double ratio, double[] inputs) {
+    public double activate(ActivationFunction type, double ratio, double[] inputs) {
         //System.out.println("Inputs: " + inputs.length + " weights: "+ weights.length);
         if (inputs.length != weights.length) {
             throw new IllegalArgumentException("Eingangsgröße stimmt nicht mit Gewichtsanzahl überein.");
@@ -32,13 +32,13 @@ public class Neuron {
         }
         sum = roundDouble(sum, 5);
 
-        if (type.equalsIgnoreCase("tanh")) { // -1; 1
+        if (type == ActivationFunction.TANH) { // -1; 1
             sum = tanh(sum * ratio);
-        } else if (type.equalsIgnoreCase("sigmoid")) { // 0; 1
+        } else if (type == ActivationFunction.SIGMOID) { // 0; 1
             sum = sigmoid(sum * ratio);
-        } else if (type.equalsIgnoreCase("linear")) {
+        } else if (type == ActivationFunction.LINEAR) {
             sum = linear(sum *ratio);
-        } else if (type.equalsIgnoreCase("leakyReLu")) { //  { a*x ; x } --> oft x=0.01 --> für negative x Werte
+        } else if (type == ActivationFunction.LEAKYRELU) { //  { a*x ; x } --> oft x=0.01 --> für negative x Werte
             sum = leakyReLu(sum * ratio);
         } else {
             System.out.println("fehlerhafter Aufruf der Aktivierungsfunktion");
@@ -58,7 +58,7 @@ public class Neuron {
          */
         return sum;
     }
-    private double roundDouble(double value, int places) {
+    public static double roundDouble(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(Double.toString(value));
@@ -92,6 +92,9 @@ public class Neuron {
     }
 
     public double[] getWeights() {
+        for(int i = 0; i < weights.length; i++) {
+            weights[i] = roundDouble(weights[i], 4);
+        }
         return weights;
     }
 

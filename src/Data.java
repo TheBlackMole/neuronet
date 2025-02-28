@@ -12,6 +12,41 @@ public class Data {
 
     }
 
+    public static void createTrainingData2(int dataSize) {
+        Random random = new Random();
+        StringBuilder data = new StringBuilder("Input1, Input2, Output\n");
+
+        for (int i = 0; i < dataSize; i++) {
+            int input1 = random.nextInt(100) + 1;
+            int input2 = random.nextInt(100) + 1;
+            double output = Neuron.roundDouble(calculateOutput(input1, input2), 4);
+            data.append(input1).append(", ").append(input2).append(", ").append(output).append("\n");
+        }
+
+        try (FileWriter fileWriter = new FileWriter("training_data.csv")) {
+            fileWriter.write(data.toString());
+            System.out.println(dataSize + " Trainingsdatensätze wurden in 'training_data.csv' gespeichert.");
+        } catch (IOException e) {
+            System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
+        }
+    }
+
+    public static double calculateOutput(int input1, int input2) {
+        // Tanh-Funktion als Rückgabe
+        return (2 / (1 + Math.exp(-0.1 * (input2-input1)))) - 1;
+        /*
+        if (input1 == input2) {
+            return 0;
+        } else if (input1 > input2) {
+            return -1.0 * Math.abs(input1 - input2) / 10;
+        } else {
+            return (double) Math.abs(input1 - input2) / 10;
+        }
+
+        */
+    }
+    
+
     public void createTrainingData(int dataSize) {
         String filename = "trainingsdaten.txt";
         Random rand = new Random();
@@ -22,7 +57,7 @@ public class Data {
             for (int i = 0; i < dataSize; i++) {
                 int x = rand.nextInt(100) + 1;  // Zufallszahl 1-50
                 int y = rand.nextInt(100) + 1; // Zufallszahl 1-50
-                double label1 = gaussCurve(x,y);
+                double label1 = Neuron.roundDouble(gaussCurve(x,y), 4);
 
                 writer.write(Math.min(x,y) + "," + Math.max(x,y) + "," + label1 + "\n");
             }
