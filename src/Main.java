@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -7,8 +8,9 @@ public class Main {
 
 
     public static void main(String[] args) {
-
-        Network network = new Network(2, 4, 1, 1000);
+        List<Integer> hiddenLayerSizes = new ArrayList<>();
+        hiddenLayerSizes.add(4);
+        Network network = new Network(2, hiddenLayerSizes, 1, 1000);
         network.training(1000);
         double[] input = {10, 10};
         double[] results = network.run(input);
