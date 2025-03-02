@@ -131,9 +131,6 @@ public class GUI implements ActionListener   {
                 
             }
             start.add(neuronWeightsPanel);
-        }
-
-        for (NeuronLayer hiddenLayer : hiddenLayers) {
             JPanel P_neuronBiasHidden = new JPanel();
             P_neuronBiasHidden.setLayout(new GridLayout(0,1));
             P_neuronBiasHidden.setBorder(new EmptyBorder(5,5,5,5));
@@ -143,6 +140,7 @@ public class GUI implements ActionListener   {
             }
             start.add(P_neuronBiasHidden);
         }
+
 
         // Panel für jedes Neuron im outputLayer
         JPanel P_neuronWeightsOutput = new JPanel();

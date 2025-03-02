@@ -1,17 +1,21 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Main {
 
 
 
     public static void main(String[] args) {
+        // Hier kann man die Größe der Hiddenlayers angebe, {4,4} -> 2 Hiddenlayer mit je 4 Neuronen
+        Integer[] h = new Integer[] {3,3};
+        // Umwandlung in Arraylist
         List<Integer> hiddenLayerSizes = new ArrayList<>();
-        hiddenLayerSizes.add(4);
+        Collections.addAll(hiddenLayerSizes, h);
+
+        // Erstellen und Trainieren des Network
         Network network = new Network(2, hiddenLayerSizes, 1, 1000);
         network.training(1000);
+
+        // Ausgabe
         double[] input = {10, 10};
         double[] results = network.run(input);
         System.out.println("Input " + Arrays.toString(input));
