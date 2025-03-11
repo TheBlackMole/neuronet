@@ -14,9 +14,9 @@ import java.util.Random;
 
 
 public class Network {
-    int inputLayerSize;
-    int outputLayerSize;
-    List<Double> costs;
+    private int inputLayerSize;
+    private int outputLayerSize;
+    private List<Double> costs;
     public static List<double[]> trainingData = null;
     private GUI gui;
     private List<Integer> hiddenLayerSizes;
@@ -195,6 +195,8 @@ public class Network {
         }
         System.out.println("Das Training wurde abgeschlossen. Neue Kosten: " + Neuron.roundDouble(costs.getLast(), 4));
 
+        // Test der Backpropklasse
+        Backprop backprop = new Backprop(this);
     }
 /*
     private void changeActivationFunktion(NeuronLayer hidden, NeuronLayer output, List<double[]> trainingData) {
@@ -372,5 +374,17 @@ public class Network {
     
     public NeuronLayer getOutputLayer() {
         return outputLayer;
+    }
+
+    public int getInputLayerSize() {
+        return inputLayerSize;
+    }
+
+    public List<Integer> getHiddenLayerSizes() {
+        return hiddenLayerSizes;
+    }
+
+    public int getOutputLayerSize() {
+        return outputLayerSize;
     }
 }
