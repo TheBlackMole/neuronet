@@ -14,22 +14,23 @@ import java.util.Random;
 
 
 public class Network {
-
-    private NeuronLayer hiddenLayer;
-    private NeuronLayer outputLayer;
     int inputLayerSize;
-    int hiddenLayerSize;
     int outputLayerSize;
     List<Double> costs;
     public static List<double[]> trainingData = null;
     private GUI gui;
+    private List<Integer> hiddenLayerSizes;
+    private List<NeuronLayer> hiddenLayers;
+    private NeuronLayer outputLayer;
 
-    public Network(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int trainingDataSize) {
+
+    public Network(int inputLayerSize, List<Integer> hiddenLayerSizes, int outputLayerSize, int trainingDataSize) {
         this.inputLayerSize = inputLayerSize;
-        this.hiddenLayerSize = hiddenLayerSize;
         this.outputLayerSize = outputLayerSize;
-        hiddenLayer = new NeuronLayer(hiddenLayerSize, inputLayerSize);
-        outputLayer = new NeuronLayer(outputLayerSize, hiddenLayerSize);
+        this.hiddenLayerSizes = hiddenLayerSizes;
+        this.hiddenLayers = new ArrayList<>();
+        initializeNetwork();
+
         try {
             loadWeightsAndBiases("weights_biases.txt");
         }
@@ -43,13 +44,32 @@ public class Network {
         gui = new GUI(this);
     }
 
-    public double[] run(double[] input) {
-        //System.out.println("Inputs: " + input [0] + " " + input[1]);
+    private void initializeNetwork(){
+        //NeuronLayer inputLayer = new NeuronLayer(inputLayerSize, 0);
+        //layers.add(inputLayer);
+        
+        int previousLayerSize = inputLayerSize;
+        for (int hiddenLayerSize : hiddenLayerSizes) {
+            NeuronLayer hiddenLayer = new NeuronLayer(hiddenLayerSize, previousLayerSize);
+            hiddenLayers.add(hiddenLayer);
+            previousLayerSize = hiddenLayerSize;
+        }
 
-        double[] resultsHiddenLayer = hiddenLayer.forward(input, null);
-        return outputLayer.forward(resultsHiddenLayer, ActivationFunction.TANH);
+       outputLayer = new NeuronLayer(outputLayerSize, previousLayerSize);
+
     }
 
+    
+
+    public double[] run(double[] input) {
+        //System.out.println("Inputs: " + input [0] + " " + input[1]);
+        for (NeuronLayer layer : hiddenLayers) {
+            input = layer.forward(input, null);
+        }
+        return outputLayer.forward(input, ActivationFunction.TANH);
+    }
+
+    
     public void preTraining() {
         double oldCost = 0;
         double newCost = 0;
@@ -65,7 +85,9 @@ public class Network {
         // Vier mal "Antrainieren" mit den verschiedenen Aktivierungsfunktionen
         saveWeightsAndBiases("weights_biases.txt");
         for(int n = 0; n<4; n++) {
-            hiddenLayer.setActivationFunction(activationFunctions[n]);
+            for(NeuronLayer l : hiddenLayers) {
+                l.setActivationFunction(activationFunctions[n]);
+            }
             loadWeightsAndBiases("weights_biases.txt");
             // "Antrainieren"
             for(int i = 0; i<500; i++) {
@@ -74,8 +96,11 @@ public class Network {
                 // Altes Netz sichern
                 saveWeightsAndBiases("new_weights_biases.txt");
 
-                // Layer anpassen
-                hiddenLayer.changeValue(oldCost, 0.01); // Hiddenlayer wird geändert
+                // Layers anpassen
+                for(NeuronLayer l : hiddenLayers) {
+                    l.changeValue(oldCost, 0.01); // Hiddenlayer wird geändert
+                }
+
                 outputLayer.changeValue(oldCost, 0.01); // Outputlayer wird geändert
 
                 // Neue Kosten berechnen
@@ -97,18 +122,16 @@ public class Network {
                 lowestIndex = i;
             }
         }
+        for(NeuronLayer l : hiddenLayers) {
+            l.setActivationFunction(activationFunctions[lowestIndex]); // Hiddenlayers werden auf beste Funktion gesetzt
+        }
 
-        hiddenLayer.setActivationFunction(activationFunctions[lowestIndex]);
         System.out.println(activationFunctions[lowestIndex].toString());
-
     }
 
 
 
     public void training(int trainingSize) {
-        //Random r = new Random();
-
-
         double oldCost = 0;
         double newCost = 0;
 
@@ -123,7 +146,9 @@ public class Network {
                 preTraining();
             } else {
                 System.out.println("Pretraining wird uebersprungen, da die Kosten <=2 sind.");
-                hiddenLayer.setActivationFunction(activationFunction);
+                for (NeuronLayer hiddenLayer : hiddenLayers) {
+                    hiddenLayer.setActivationFunction(activationFunction);
+                }
             }
         } catch (IOException e) {
             System.out.println("Pretraining wird durchgeführt, da dies der erste Durchlauf ist.");
@@ -134,7 +159,6 @@ public class Network {
         //hiddenLayer.setActivationFunction(ActivationFunction.LINEAR);
 
         for(int i = 0; i < trainingSize; i++) {
-            
             // Alte Kosten berechnen
             oldCost = calculateCurrentCostSum(trainingData);
 
@@ -142,7 +166,9 @@ public class Network {
             saveWeightsAndBiases("weights_biases.txt");
 
             // Layer anpassen
-            hiddenLayer.changeValue(oldCost, 0.001); // Hiddenlayer wird geändert
+            for (NeuronLayer hiddenLayer : hiddenLayers) {
+                hiddenLayer.changeValue(oldCost, 0.001); // Hiddenlayer wird geändert
+            }
             outputLayer.changeValue(oldCost, 0.001); // Outputlayer wird geändert
 
             // Neue Kosten berechnen
@@ -163,14 +189,14 @@ public class Network {
         gui.init();
         try (FileWriter file = new FileWriter("trainingdoc.txt")) {
             file.write(Neuron.roundDouble(newCost, 4) + "\n");
-            file.write(hiddenLayer.getActivationFunction().toString());
+            file.write(hiddenLayers.get(0).getActivationFunction().toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Das Training wurde abgeschlossen. Neue Kosten: " + Neuron.roundDouble(costs.getLast(), 4));
 
     }
-
+/*
     private void changeActivationFunktion(NeuronLayer hidden, NeuronLayer output, List<double[]> trainingData) {
         //Kosten mit allen Möglichkeiten der Aktivierungsfunktionen ausrechen und die Kosten in Array speichern
         Double[] costs = new Double[16];
@@ -211,6 +237,7 @@ public class Network {
         }
         
     }
+    */
 
     // Berechnet die summierten Kosten aller Trainingsdaten
     private double calculateCurrentCostSum(List<double[]> trainingData) {
@@ -236,9 +263,11 @@ public class Network {
     public void saveWeightsAndBiases(String filename) {
         try (FileWriter file = new FileWriter(filename)) {
             // Speichern der Gewichte und Biases der versteckten Schicht
-            for (Neuron neuron : hiddenLayer.getNeurons()) {
-                file.write(roundDouble(neuron.getBias(), 4) + "\n");
-                file.write(Arrays.toString(neuron.getWeights()) + "\n");
+            for (NeuronLayer hiddenLayer : hiddenLayers) {
+                for (Neuron neuron : hiddenLayer.getNeurons()) {
+                    file.write(roundDouble(neuron.getBias(), 4) + "\n");
+                    file.write(Arrays.toString(neuron.getWeights()) + "\n");
+                }
             }
             
             // Speichern der Gewichte und Biases der Ausgabeschicht
@@ -256,15 +285,17 @@ public class Network {
             String line;
         
             // Laden der Gewichte und Biases der versteckten Schicht
-            for (Neuron neuron : hiddenLayer.getNeurons()) {
-                if ((line = reader.readLine()) != null) {
-                    neuron.setBias(Double.parseDouble(line));
-               }
-               if ((line = reader.readLine()) != null) {
-                  double[] weights = Arrays.stream(line.replace("[", "").replace("]", "").split(","))
-                                           .mapToDouble(Double::parseDouble).toArray();
-                  neuron.setWeights(weights);
-               }
+            for (NeuronLayer hiddenLayer : hiddenLayers) {
+                for (Neuron neuron : hiddenLayer.getNeurons()) {
+                    if ((line = reader.readLine()) != null) {
+                        neuron.setBias(Double.parseDouble(line));
+                   }
+                   if ((line = reader.readLine()) != null) {
+                      double[] weights = Arrays.stream(line.replace("[", "").replace("]", "").split(","))
+                                               .mapToDouble(Double::parseDouble).toArray();
+                      neuron.setWeights(weights);
+                   }
+                }
             }
 
             // Laden der Gewichte und Biases der Ausgabeschicht
@@ -334,10 +365,11 @@ public class Network {
 
     }
 
-    public NeuronLayer getHiddenLayer() {
-        return hiddenLayer;
+    
+    public List<NeuronLayer> getHiddenLayers() {
+        return hiddenLayers;
     }
-
+    
     public NeuronLayer getOutputLayer() {
         return outputLayer;
     }
