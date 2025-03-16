@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,8 +17,7 @@ import java.util.List;
 
 
 public class GUI implements ActionListener   {
-    private List<NeuronLayer> hiddenLayers;
-    private NeuronLayer outputLayer;
+    private List<NeuronLayer> layers;
     private Network network;
 
     private JFrame start;
@@ -34,8 +32,7 @@ public class GUI implements ActionListener   {
 
     public GUI(Network network) {
         this.network = network;
-        this.hiddenLayers = network.getHiddenLayers();
-        this.outputLayer = network.getOutputLayer();
+        this.layers = network.getLayers();
         init();
     }
 
@@ -109,12 +106,8 @@ public class GUI implements ActionListener   {
         L_hiddenLayer.setHorizontalAlignment(JLabel.CENTER);
         L_hiddenLayer.setOpaque(true);
 
-        L_outputLayer = new JLabel("HiddenLayer");
-        L_outputLayer.setFont(new Font("helvetica", Font.BOLD, 20));
-        L_outputLayer.setHorizontalAlignment(JLabel.CENTER);
-        L_outputLayer.setOpaque(true);
 
-        for (NeuronLayer hiddenLayer : hiddenLayers) {
+        for (NeuronLayer hiddenLayer : layers) {
             // Panel für jedes Neuron im hiddenLayer
             JPanel neuronWeightsPanel = new JPanel();
             neuronWeightsPanel.setLayout(new GridLayout(0, 1));
@@ -142,28 +135,6 @@ public class GUI implements ActionListener   {
         }
 
 
-        // Panel für jedes Neuron im outputLayer
-        JPanel P_neuronWeightsOutput = new JPanel();
-        P_neuronWeightsOutput.setLayout(new GridLayout(0, 1));
-        P_neuronWeightsOutput.setBorder(new EmptyBorder(5,5,5,5));
-        int stelleNeuronOutput = 0;
-        for (Neuron  neuron : outputLayer.getNeurons()) {
-            stelleNeuronOutput++;
-            double[] weights = neuron.getWeights();
-            for(int i = 0; i < weights.length; i++) {
-                JLabel L_weightsOutput = new JLabel("Weight " + (stelleNeuronOutput ) + "." + (i+1) + ": " + weights[i]);
-                P_neuronWeightsOutput.add(L_weightsOutput);
-            }
-            
-        }
-
-        JPanel P_neuronBiasOutput = new JPanel();
-        P_neuronBiasOutput.setLayout(new GridLayout(0,1));
-        P_neuronBiasOutput.setBorder(new EmptyBorder(5,5,5,5));
-        for (Neuron neuron : outputLayer.getNeurons()) {
-            JLabel L_bias = new JLabel( "Bias: " + neuron.getBias());
-            P_neuronBiasOutput.add(L_bias);
-        }
 
         L_result = new JLabel("Ergebnis: ");
         L_result.setFont(new Font("helvetica", Font.BOLD, 20));
@@ -195,9 +166,7 @@ public class GUI implements ActionListener   {
                 //throw new UnsupportedOperationException("erster Input");
             }
         });
-        
-        start.add(P_neuronWeightsOutput);
-        start.add(P_neuronBiasOutput);
+
         start.add(L_result);
         start.setVisible(true);
     }

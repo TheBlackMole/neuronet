@@ -6,14 +6,12 @@ public class Backprop {
     private List<double[]> neurons;
     private List<double[]> biases;
     private List<double[][]> weights;
-    private List<NeuronLayer> hiddenLayers;
-    private NeuronLayer outputLayer;
+    private List<NeuronLayer> layers;
 
     public Backprop(Network network) {
         this.network = network;
         // Layers speichern
-        hiddenLayers = network.getHiddenLayers();
-        outputLayer = network.getOutputLayer();
+        layers = network.getLayers();
 
         initBiases();
         initWeights();
@@ -23,51 +21,36 @@ public class Backprop {
         // Biase in Matrizen speichern
         biases = new ArrayList<>();
         biases.add(new double[network.getInputLayerSize()]); // Leeres Array, da das Inputlayer keine Biases hat
-        for(NeuronLayer l : hiddenLayers) {
-            Neuron[] hiddenLayerNeurons = l.getNeurons();
-            double[] hiddenLayerBiases = new double[hiddenLayerNeurons.length];
-            for(int i = 0; i < hiddenLayerNeurons.length; i++) { // Biase aus Neuronenarray uebernehmen
-                hiddenLayerBiases[i] = hiddenLayerNeurons[i].getBias();
+        for(NeuronLayer l : layers) {
+            Neuron[] layerNeurons = l.getNeurons();
+            double[] layerBiases = new double[layerNeurons.length];
+            for(int i = 0; i < layerNeurons.length; i++) { // Biase aus Neuronenarray uebernehmen
+                layerBiases[i] = layerNeurons[i].getBias();
             }
-            biases.add(hiddenLayerBiases);
+            biases.add(layerBiases);
         }
-        Neuron[] outputLayerNeurons = outputLayer.getNeurons();
-        double[] outputLayerBiases = new double[outputLayerNeurons.length];
-        for(int i = 0; i < outputLayerNeurons.length; i++) { // Biase aus Neuronenarray uebernehmen
-            outputLayerBiases[i] = outputLayerNeurons[i].getBias();
-        }
-        biases.add(outputLayerBiases);
     }
 
     private void initWeights() {
         // Weights in Matrizen speichern
         weights = new ArrayList<>();
         weights.add(new double[network.getInputLayerSize()][1]); // Leeres Array, da das Inputlayer keine Weights hat
-        for(int n = 0; n < hiddenLayers.size(); n++) {
-            Neuron[] hiddenLayerNeurons = hiddenLayers.get(n).getNeurons();
+        for(int n = 0; n < layers.size(); n++) {
+            Neuron[] layerNeurons = layers.get(n).getNeurons();
             int layerSizeBefore = 0;
             if(n == 0) { // beim ersten HL muss das IL als Vorgaenger genommen werden
                 layerSizeBefore = network.getInputLayerSize();
             } else {
-                layerSizeBefore = hiddenLayers.get(n-1).getNeurons().length;
+                layerSizeBefore = layers.get(n-1).getNeurons().length;
             }
-            double[][] hiddenLayerWeights = new double[hiddenLayerNeurons.length][layerSizeBefore];
-            for(int i = 0; i < hiddenLayerNeurons.length; i++) { // Biase aus Neuronenarray uebernehmen
+            double[][] hiddenLayerWeights = new double[layerNeurons.length][layerSizeBefore];
+            for(int i = 0; i < layerNeurons.length; i++) { // Weights aus Neuronenarray uebernehmen
                 for(int j = 0; j < layerSizeBefore; j++) {
-                    hiddenLayerWeights[i][j] = hiddenLayerNeurons[i].getWeights()[j];
+                    hiddenLayerWeights[i][j] = layerNeurons[i].getWeights()[j];
                 }
             }
             weights.add(hiddenLayerWeights);
         }
-        Neuron[] outputLayerNeurons = outputLayer.getNeurons();
-        int lastHiddenLayerSize = hiddenLayers.get(hiddenLayers.size() - 1).getNeurons().length;
-        double[][] outputLayerWeights = new double[outputLayerNeurons.length][lastHiddenLayerSize];
-        for(int i = 0; i < outputLayerNeurons.length; i++) { // Biase aus Neuronenarray uebernehmen
-            for(int j = 0; j < lastHiddenLayerSize; j++) {
-                outputLayerWeights[i][j] = outputLayerNeurons[i].getWeights()[j];
-            }
-        }
-        weights.add(outputLayerWeights);
     }
 
     public double getBias(int layer, int indexNeuron) {
