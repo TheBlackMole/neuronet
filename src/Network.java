@@ -191,6 +191,8 @@ public class Network {
 
         // Test der Backpropklasse
         Backprop backprop = new Backprop(this);
+        double[] outputBackProp = backprop.calculateZandA(new double[] {10,10});
+        System.out.println("Ergebnis Backprop: " + Arrays.toString(outputBackProp));
     }
 /*
     private void changeActivationFunktion(NeuronLayer hidden, NeuronLayer output, List<double[]> trainingData) {
